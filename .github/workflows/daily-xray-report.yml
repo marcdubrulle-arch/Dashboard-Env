@@ -1,0 +1,51 @@
+name: Daily XRAY Report
+
+on:
+  schedule:
+    # 06:30 UTC ~= 08:30 Europe/Paris (ajuster selon besoin)
+    - cron: '30 6 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  build-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+      CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
+      CONFLUENCE_SPACE: ${{ secrets.CONFLUENCE_SPACE }}
+      CONFLUENCE_TOKEN: ${{ secrets.CONFLUENCE_TOKEN }}
+      PROXY_USER: ${{ secrets.PROXY_USER }}
+      PROXY_PASS: ${{ secrets.PROXY_PASS }}
+      PROXY_HOST: ${{ secrets.PROXY_HOST }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate reports (XITG + XMQ1)
+        run: |
+          python xray_rapport_du_jour.py --env XITG --output rapport_XITG_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XITG" --confluence-parent-id 468779106
+          python xray_rapport_du_jour.py --env XMQ1 --output rapport_XMQ1_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XMQ1" --confluence-parent-id 468779106
+          python generate_accueil.py --output accueil.html
+
+      - name: Upload generated HTML artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-rapport-html
+          path: |
+            rapport_*.html
+            accueil.html
+            stats_history.json

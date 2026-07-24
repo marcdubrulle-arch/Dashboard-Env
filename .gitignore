@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# Generated reports
+rapport_*.html
+accueil.html
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
