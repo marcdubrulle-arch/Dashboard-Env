@@ -12,14 +12,8 @@ jobs:
     timeout-minutes: 30
 
     env:
-      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
       JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-      CONFLUENCE_BASE_URL: ${{ secrets.CONFLUENCE_BASE_URL }}
-      CONFLUENCE_SPACE: ${{ secrets.CONFLUENCE_SPACE }}
       CONFLUENCE_TOKEN: ${{ secrets.CONFLUENCE_TOKEN }}
-      PROXY_USER: ${{ secrets.PROXY_USER }}
-      PROXY_PASS: ${{ secrets.PROXY_PASS }}
-      PROXY_HOST: ${{ secrets.PROXY_HOST }}
 
     steps:
       - name: Checkout
