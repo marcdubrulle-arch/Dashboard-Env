@@ -47,11 +47,18 @@ CONFLUENCE_TOKEN    = os.getenv("CONFLUENCE_TOKEN",     "")  # Token séparé po
 # Proxy Orange SI — identifiants réseau requis (407)
 PROXY_USER       = os.getenv("PROXY_USER", "")   # ex: whdd0146
 PROXY_PASS       = os.getenv("PROXY_PASS", "")   # mot de passe réseau Orange
-PROXY_HOST       = os.getenv("PROXY_HOST", "proxy.si.francetelecom.fr:8080")
+PROXY_HOST       = os.getenv("PROXY_HOST", "")
 PROXY            = (
     f"http://{PROXY_USER}:{PROXY_PASS}@{PROXY_HOST}"
     if PROXY_USER else os.getenv("JIRA_PROXY", "")
 )
+
+
+def build_proxy_args() -> list[str]:
+    """Construit les arguments curl de proxy uniquement si un proxy est défini."""
+    if PROXY_HOST:
+        return ["--proxy", f"http://{PROXY_HOST}", "--proxy-negotiate", "-U", ":"]
+    return []
 
 # ─────────────────────────────────────────────
 #  SESSION
@@ -67,8 +74,7 @@ def curl_get(url: str, params: dict = None) -> dict:
 
     cmd = [
         "curl", "-s", "-k",
-        "--proxy", f"http://{PROXY_HOST}",
-        "--proxy-negotiate", "-U", ":",
+        *build_proxy_args(),
         "-H", f"Authorization: Bearer {JIRA_TOKEN}",
         "-H", "Content-Type: application/json",
         "-H", "Accept: application/json",
@@ -471,8 +477,7 @@ def publish_to_confluence_child(html_content: str, page_title: str,
         import time as _time
         cmd = [
             "curl", "-s", "-k",
-            "--proxy", f"http://{PROXY_HOST}",
-            "--proxy-negotiate", "-U", ":",
+            *build_proxy_args(),
             "-X", method,
             "-H", f"Authorization: Bearer {token}",
             "-H", "Content-Type: application/json",
@@ -629,8 +634,7 @@ def publish_to_confluence(html_content: str, target_date, console):
     page_url = f"{CONFLUENCE_BASE_URL}/rest/api/content/{CONFLUENCE_PAGE_ID}?expand=version,title"
     cmd_get = [
         "curl", "-s", "-k",
-        "--proxy", f"http://{PROXY_HOST}",
-        "--proxy-negotiate", "-U", ":",
+        *build_proxy_args(),
         "-H", f"Authorization: Bearer {CONFLUENCE_TOKEN or JIRA_TOKEN}",
         "-H", "Accept: application/json",
         page_url
@@ -677,8 +681,7 @@ def publish_to_confluence(html_content: str, target_date, console):
     update_url = f"{CONFLUENCE_BASE_URL}/rest/api/content/{CONFLUENCE_PAGE_ID}"
     cmd_put = [
         "curl", "-s", "-k",
-        "--proxy", f"http://{PROXY_HOST}",
-        "--proxy-negotiate", "-U", ":",
+        *build_proxy_args(),
         "-X", "PUT",
         "-H", f"Authorization: Bearer {CONFLUENCE_TOKEN or JIRA_TOKEN}",
         "-H", "Content-Type: application/json",

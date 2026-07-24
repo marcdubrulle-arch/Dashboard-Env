@@ -6,6 +6,15 @@ on:
     - cron: '30 6 * * 1-5'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build-report:
     runs-on: ubuntu-latest
@@ -35,6 +44,10 @@ jobs:
           python xray_rapport_du_jour.py --env XMQ1 --output rapport_XMQ1_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XMQ1" --confluence-parent-id 468779106
           python generate_accueil.py --output accueil.html
 
+      - name: Prepare GitHub Pages content
+        run: |
+          cp accueil.html index.html
+
       - name: Upload generated HTML artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -43,3 +56,19 @@ jobs:
             rapport_*.html
             accueil.html
             stats_history.json
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy-pages:
+    needs: build-report
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
