@@ -5,6 +5,20 @@ on:
     # 06:30 UTC ~= 08:30 Europe/Paris (ajuster selon besoin)
     - cron: '30 6 * * 1-5'
   workflow_dispatch:
+    inputs:
+      start_date:
+        description: "Date de début (YYYY-MM-DD). Optionnel."
+        required: false
+        type: string
+      end_date:
+        description: "Date de fin (YYYY-MM-DD). Optionnel, utilisé avec start_date."
+        required: false
+        type: string
+      verify_confluence:
+        description: "Échoue si la publication Confluence n'est pas confirmée."
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -40,8 +54,65 @@ jobs:
 
       - name: Generate reports (XITG + XMQ1)
         run: |
-          python xray_rapport_du_jour.py --env XITG --output rapport_XITG_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XITG" --confluence-parent-id 468779106 --ignore-confluence-errors
-          python xray_rapport_du_jour.py --env XMQ1 --output rapport_XMQ1_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XMQ1" --confluence-parent-id 468779106 --ignore-confluence-errors
+          set -euo pipefail
+
+          STRICT_FLAG="--ignore-confluence-errors"
+          if [ "${{ github.event.inputs.verify_confluence || 'false' }}" = "true" ]; then
+            STRICT_FLAG=""
+          fi
+
+          run_one() {
+            local day="$1"
+            local env_name="$2"
+            local title="Rapport XRAY - ${env_name}"
+            local output_file="rapport_${env_name}_${day}.html"
+            local cmd=(
+              python xray_rapport_du_jour.py
+              --date "$day"
+              --env "$env_name"
+              --output "$output_file"
+              --confluence
+              --confluence-page-title "$title"
+              --confluence-parent-id 468779106
+            )
+            if [ -n "$STRICT_FLAG" ]; then
+              cmd+=("$STRICT_FLAG")
+            fi
+
+            if [ "${{ github.event.inputs.verify_confluence || 'false' }}" = "true" ]; then
+              out="$("${cmd[@]}")"
+              echo "$out"
+              echo "$out" | grep -q "\[CONFLUENCE_URL\]" || {
+                echo "Publication Confluence non confirmée pour ${env_name} (${day})."
+                exit 1
+              }
+            else
+              "${cmd[@]}"
+            fi
+          }
+
+          START_DATE="${{ github.event.inputs.start_date || '' }}"
+          END_DATE="${{ github.event.inputs.end_date || '' }}"
+
+          if [ -n "$START_DATE" ]; then
+            if [ -z "$END_DATE" ]; then
+              END_DATE="$START_DATE"
+            fi
+            CUR="$START_DATE"
+            while [ "$(date -d "$CUR" +%s)" -le "$(date -d "$END_DATE" +%s)" ]; do
+              DOW="$(date -d "$CUR" +%u)"
+              if [ "$DOW" -le 5 ]; then
+                run_one "$CUR" "XITG"
+                run_one "$CUR" "XMQ1"
+              fi
+              CUR="$(date -I -d "$CUR + 1 day")"
+            done
+          else
+            TODAY="$(date +%F)"
+            run_one "$TODAY" "XITG"
+            run_one "$TODAY" "XMQ1"
+          fi
+
           python generate_accueil.py --output accueil.html
 
       - name: Prepare GitHub Pages content

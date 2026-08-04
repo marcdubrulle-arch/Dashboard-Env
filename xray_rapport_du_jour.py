@@ -97,15 +97,18 @@ def get_session():
 # ─────────────────────────────────────────────
 def fetch_test_executions(session, project_key: str, target_date: date) -> list:
     """
-    Récupère les Test Executions créées à la date cible (heure locale +0200)
+    Récupère les Test Executions actives sur la date cible (créées OU mises à jour)
     pour l'environnement XRAY configuré (variable ENVIRONMENT).
     """
     jql = (
         f'project = {project_key} AND issuetype = "Test Execution"'
         f' AND "Test Environments" = "{ENVIRONMENT}"'
-        f' AND created >= "{target_date.isoformat()}"'
-        f' AND created <= "{target_date.isoformat()} 23:59"'
-        f' ORDER BY created DESC'
+        f' AND ('
+        f' (created >= "{target_date.isoformat()}" AND created <= "{target_date.isoformat()} 23:59")'
+        f' OR '
+        f' (updated >= "{target_date.isoformat()}" AND updated <= "{target_date.isoformat()} 23:59")'
+        f' )'
+        f' ORDER BY updated DESC'
     )
     data = curl_get(f"{JIRA_BASE_URL}/rest/api/2/search", params={
         "jql": jql, "maxResults": 100,
