@@ -19,6 +19,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_confluence:
+        description: "Publie aussi sur Confluence pendant un backfill."
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -61,6 +66,16 @@ jobs:
             STRICT_FLAG=""
           fi
 
+          PUBLISH_CONFLUENCE="true"
+          START_DATE="${{ github.event.inputs.start_date || '' }}"
+          END_DATE="${{ github.event.inputs.end_date || '' }}"
+          if [ -n "$START_DATE" ]; then
+            PUBLISH_CONFLUENCE="${{ github.event.inputs.publish_confluence || 'false' }}"
+          fi
+          if [ "${{ github.event.inputs.verify_confluence || 'false' }}" = "true" ]; then
+            PUBLISH_CONFLUENCE="true"
+          fi
+
           run_one() {
             local day="$1"
             local env_name="$2"
@@ -71,10 +86,14 @@ jobs:
               --date "$day"
               --env "$env_name"
               --output "$output_file"
-              --confluence
-              --confluence-page-title "$title"
-              --confluence-parent-id 468779106
             )
+            if [ "$PUBLISH_CONFLUENCE" = "true" ]; then
+              cmd+=(
+                --confluence
+                --confluence-page-title "$title"
+                --confluence-parent-id 468779106
+              )
+            fi
             if [ -n "$STRICT_FLAG" ]; then
               cmd+=("$STRICT_FLAG")
             fi
@@ -90,9 +109,6 @@ jobs:
               "${cmd[@]}"
             fi
           }
-
-          START_DATE="${{ github.event.inputs.start_date || '' }}"
-          END_DATE="${{ github.event.inputs.end_date || '' }}"
 
           if [ -n "$START_DATE" ]; then
             if [ -z "$END_DATE" ]; then
