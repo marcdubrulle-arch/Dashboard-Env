@@ -55,7 +55,14 @@ jobs:
           path: |
             rapport_*.html
             accueil.html
-            stats_history.json
+
+      - name: Upload stats history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xray-stats-history
+          path: stats_history.json
+          if-no-files-found: ignore
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
