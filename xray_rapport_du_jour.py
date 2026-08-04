@@ -822,9 +822,9 @@ def main():
     _rate  = round(_grand["PASS"] / _total * 100) if _total > 0 else 0
 
     # Supprime l'entrée existante pour (date, env) si elle existe déjà
-    # On utilise la date du fichier de sortie (= date de génération = aujourd'hui)
-    # pour que le sélecteur de date dans accueil.html corresponde au nom du fichier rapport.
-    _date_str = date.today().isoformat()
+    # On utilise la date du rapport pour que l'historique reflète le jour couvert,
+    # y compris lors des backfills.
+    _date_str = target_date.isoformat()
     _history = [e for e in _history if not (e.get("date") == _date_str and e.get("env") == ENVIRONMENT)]
     _history.append({
         "date":       _date_str,

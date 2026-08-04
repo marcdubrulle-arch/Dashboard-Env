@@ -108,9 +108,9 @@ jobs:
               CUR="$(date -I -d "$CUR + 1 day")"
             done
           else
-            TODAY="$(date +%F)"
-            run_one "$TODAY" "XITG"
-            run_one "$TODAY" "XMQ1"
+            YESTERDAY="$(date -d 'yesterday' +%F)"
+            run_one "$YESTERDAY" "XITG"
+            run_one "$YESTERDAY" "XMQ1"
           fi
 
           python generate_accueil.py --output accueil.html
