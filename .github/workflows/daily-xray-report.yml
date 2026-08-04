@@ -65,11 +65,13 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload Pages artifact
+        if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
 
   deploy-pages:
+    if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
     needs: build-report
     runs-on: ubuntu-latest
     environment:
