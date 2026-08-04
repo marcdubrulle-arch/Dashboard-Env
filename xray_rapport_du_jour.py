@@ -456,7 +456,7 @@ def build_html(all_projects: list, plan_sections: list,
 </html>"""
 
 def publish_to_confluence_child(html_content: str, page_title: str,
-                                parent_id: str, console: Console):
+                                parent_id: str, console: Console, fail_on_error: bool = True):
     """
     Crée ou met à jour une page Confluence enfant identifiée par son titre.
     - Si la page existe déjà dans l'espace, elle est mise à jour (PUT).
@@ -578,7 +578,9 @@ def publish_to_confluence_child(html_content: str, page_title: str,
             results     = search_data.get("results", [])
         except Exception as e:
             console.print(f"[red]Erreur recherche Confluence : {e}[/red]")
-            _sys.exit(1)
+            if fail_on_error:
+                _sys.exit(1)
+            return False
 
         import time as _time_pause
         _time_pause.sleep(2)
@@ -624,7 +626,10 @@ def publish_to_confluence_child(html_content: str, page_title: str,
 
     if not published:
         console.print(f"[bold red]Publication Confluence échouée pour '{page_title}'.[/bold red]")
-        _sys.exit(1)
+        if fail_on_error:
+            _sys.exit(1)
+        return False
+    return True
 
 
 def publish_to_confluence(html_content: str, target_date, console):
@@ -713,6 +718,7 @@ def main():
     arg_parser.add_argument("--confluence",            action="store_true", default=False, help="Publier le rapport sur Confluence")
     arg_parser.add_argument("--confluence-page-title", default=None,        help="Titre de la page Confluence à créer/mettre à jour")
     arg_parser.add_argument("--confluence-parent-id",  default="468779106", help="ID de la page parent Confluence (défaut: 468779106)")
+    arg_parser.add_argument("--ignore-confluence-errors", action="store_true", default=False, help="Ne pas échouer si la publication Confluence échoue")
     args = arg_parser.parse_args()
 
     target_date = date.today() - __import__('datetime').timedelta(days=1)
@@ -850,6 +856,7 @@ def main():
                 args.confluence_page_title,
                 args.confluence_parent_id,
                 console,
+                fail_on_error=not args.ignore_confluence_errors,
             )
         else:
             # Mode historique (page fixe par ID)
@@ -857,4 +864,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

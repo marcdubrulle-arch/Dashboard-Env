@@ -40,8 +40,8 @@ jobs:
 
       - name: Generate reports (XITG + XMQ1)
         run: |
-          python xray_rapport_du_jour.py --env XITG --output rapport_XITG_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XITG" --confluence-parent-id 468779106
-          python xray_rapport_du_jour.py --env XMQ1 --output rapport_XMQ1_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XMQ1" --confluence-parent-id 468779106
+          python xray_rapport_du_jour.py --env XITG --output rapport_XITG_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XITG" --confluence-parent-id 468779106 --ignore-confluence-errors
+          python xray_rapport_du_jour.py --env XMQ1 --output rapport_XMQ1_$(date +%F).html --confluence --confluence-page-title "Rapport XRAY - XMQ1" --confluence-parent-id 468779106 --ignore-confluence-errors
           python generate_accueil.py --output accueil.html
 
       - name: Prepare GitHub Pages content
