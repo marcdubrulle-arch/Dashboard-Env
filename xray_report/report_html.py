@@ -47,53 +47,6 @@ def build_html(
         cls = "pass" if rate >= 80 else ("warn" if rate >= 50 else "fail")
         return f'<span class="rate-badge {cls}">{rate}%</span>'
 
-    def rows_for_executions(executions):
-        html = ""
-        for ex in executions:
-            key = ex.get("key", "—")
-            summary = (ex.get("fields") or ex).get("summary", ex.get("summary", "—"))
-            runs = ex.get("_runs", [])
-            stats = compute_stats(runs)
-            total = sum(stats.values())
-            rate = success_rate(stats)
-            link = f"{jira_base_url}/browse/{key}"
-            html += f"""
-            <tr>
-              <td><a href="{link}" target="_blank" class="key-link">{key}</a></td>
-              <td class="summary">{summary[:60]}</td>
-              <td class="center">{total}</td>
-              <td class="center pass-txt">{stats.get('PASS',0)}</td>
-              <td class="center fail-txt">{stats.get('FAIL',0)}</td>
-              <td class="center exec-txt">{stats.get('EXECUTING',0)}</td>
-              <td class="center todo-txt">{stats.get('TODO',0)}</td>
-              <td class="center aborted-txt">{stats.get('ABORTED',0)}</td>
-              <td>{stat_bar(stats)}</td>
-              <td class="center">{rate_badge(rate)}</td>
-            </tr>"""
-        return html
-
-    def jira_rows(issues):
-        html = ""
-        for issue in issues:
-            key = issue.get("key", "—")
-            fields = issue.get("fields", {})
-            summary = fields.get("summary", "—")
-            status = (fields.get("status") or {}).get("name", "—")
-            priority = (fields.get("priority") or {}).get("name", "—")
-            assignee = ((fields.get("assignee") or {}).get("displayName")) or "Non assigné"
-            updated = fields.get("updated", "")
-            updated_display = updated.replace("T", " ").replace(".000+0000", "") if updated else "—"
-            html += f"""
-            <tr>
-              <td><a href="{jira_base_url}/browse/{key}" target="_blank" class="key-link">{key}</a></td>
-              <td class="summary">{escape(summary)[:120]}</td>
-              <td>{escape(status)}</td>
-              <td>{escape(priority)}</td>
-              <td>{escape(assignee)}</td>
-              <td>{escape(updated_display)}</td>
-            </tr>"""
-        return html
-
     def format_dynatrace_ts(ts_ms):
         if ts_ms is None:
             return "—"
@@ -144,21 +97,18 @@ def build_html(
             <span class="project-title">{pkey}</span>
             <span class="project-meta">{len(execs)} campagne(s) · {ptotal} tests · {rate_badge(prate)}</span>
           </div>
-          <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>TE Key</th><th>Résumé</th><th>Total</th>
-                <th class="pass-txt">PASS</th><th class="fail-txt">FAIL</th>
-                <th class="exec-txt">EXEC</th><th class="todo-txt">TODO</th>
-                <th class="aborted-txt">ABORT</th>
-                <th style="min-width:140px">Répartition</th><th>Taux</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows_for_executions(execs) if execs else '<tr><td colspan="10" class="empty">Aucune exécution trouvée</td></tr>'}
-            </tbody>
-          </table>
+          <div class="plan-summary">
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val">{len(execs)}</span><span class="kpi-lbl">CAMPAGNES</span></div>
+              <div class="kpi"><span class="kpi-val pass-txt">{pt.get('PASS',0)}</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">{pt.get('FAIL',0)}</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">{pt.get('EXECUTING',0)}</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">{pt.get('TODO',0)}</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val aborted-txt">{pt.get('ABORTED',0)}</span><span class="kpi-lbl">ABORT</span></div>
+              <div class="kpi"><span class="kpi-val">{ptotal}</span><span class="kpi-lbl">TOTAL TESTS</span></div>
+              <div class="kpi">{rate_badge(prate)}<span class="kpi-lbl">TAUX</span></div>
+            </div>
+            {stat_bar(pt)}
           </div>
         </div>"""
 
@@ -172,20 +122,6 @@ def build_html(
             stats = compute_stats(runs)
             total = sum(stats.values())
             rate = success_rate(stats)
-            run_rows = ""
-            for run in runs[:50]:
-                rkey = run.get("key", "—")
-                rsumm = run.get("summary", "—")
-                raw = run.get("status") or "OTHER"
-                rstatus = raw if isinstance(raw, str) else raw.get("name", "OTHER")
-                cls = rstatus.lower().replace(" ", "-")
-                run_rows += f"""
-                <tr>
-                  <td><a href="{jira_base_url}/browse/{rkey}" target="_blank" class="key-link">{rkey}</a></td>
-                  <td class="summary">{rsumm[:55]}</td>
-                  <td class="center"><span class="badge {cls}">{rstatus}</span></td>
-                </tr>"""
-
             all_plan_blocks_html += f"""
         <div class="project-block plan-block">
           <div class="project-header">
@@ -203,12 +139,6 @@ def build_html(
               <div class="kpi">{rate_badge(rate)}<span class="kpi-lbl">TAUX</span></div>
             </div>
             {stat_bar(stats)}
-          </div>
-          <div class="table-wrap" style="margin-top:16px">
-          <table>
-            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
-            <tbody>{run_rows if run_rows else '<tr><td colspan="3" class="empty">Aucun test</td></tr>'}</tbody>
-          </table>
           </div>
         </div>"""
         else:
@@ -304,7 +234,11 @@ def build_html(
     <div class="kpi-card"><div class="val">{grand_rate}%</div><div class="lbl">Taux réussite</div></div>
   </div>
   <div class="section-title">Tickets Jira ouverts ({environment})</div>
-  <div class="project-block"><div class="table-wrap"><table><thead><tr><th>Ticket</th><th>Résumé</th><th>Statut</th><th>Priorité</th><th>Assigné à</th><th>Mis à jour</th></tr></thead><tbody>{'<tr><td colspan="6" class="empty">' + escape(jira_open_error) + '</td></tr>' if jira_open_error else (jira_rows(jira_open_issues) if jira_open_issues else '<tr><td colspan="6" class="empty">Aucun ticket ouvert trouvé</td></tr>')}</tbody></table></div></div>
+  <div class="project-block">
+    <div class="plan-summary">
+      {'<p class="empty" style="padding:0">' + escape(jira_open_error) + '</p>' if jira_open_error else '<div class="kpi-row"><div class="kpi"><span class="kpi-val">' + str(len(jira_open_issues)) + '</span><span class="kpi-lbl">TICKETS OUVERTS</span></div></div>'}
+    </div>
+  </div>
   <div class="section-title">Problèmes Dynatrace ouverts ({environment}{' · tag: ' + dynatrace_tag if dynatrace_tag else ''})</div>
   <div class="project-block"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Titre</th><th>Sévérité</th><th>Impact</th><th>Statut</th><th>Début</th></tr></thead><tbody>{'<tr><td colspan="6" class="empty">' + escape(dynatrace_error) + '</td></tr>' if dynatrace_error else (dynatrace_rows(dynatrace_open_problems) if dynatrace_open_problems else '<tr><td colspan="6" class="empty">Aucun problème Dynatrace ouvert trouvé</td></tr>')}</tbody></table></div></div>
   <div class="section-title">Exécutions du jour par projet</div>
