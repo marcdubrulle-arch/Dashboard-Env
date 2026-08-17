@@ -164,6 +164,9 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+          # Only include HTML, JSON files for GitHub Pages
+          # Exclude .git, node_modules, __pycache__, etc.
+
 
   deploy-pages:
     needs: build-report
