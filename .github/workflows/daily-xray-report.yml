@@ -160,20 +160,34 @@ jobs:
           path: stats_history.json
           if-no-files-found: ignore
 
-      - name: Upload Pages artifact
-        if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-  deploy-pages:
-    if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
-    needs: build-report
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages (gh-pages branch)
+        if: github.event_name == 'push' || github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.start_date)
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+           
+          # Create gh-pages branch if it doesn't exist
+          git fetch origin gh-pages 2>/dev/null || true
+           
+          # Create a temporary directory for Pages content
+          mkdir -p /tmp/pages-content
+          cp rapport_*.html accueil.html index.html stats_history.json /tmp/pages-content/ 2>/dev/null || true
+           
+          # Switch to gh-pages branch (create if needed)
+          git checkout -B gh-pages origin/gh-pages 2>/dev/null || git checkout --orphan gh-pages
+           
+          # Remove old content but keep .git and .gitignore
+          find . -maxdepth 1 -type f -name "*.html" -o -name "*.json" | xargs rm -f 2>/dev/null || true
+           
+          # Copy new content
+          cp /tmp/pages-content/* . 2>/dev/null || true
+           
+          # Commit and push
+          git add .
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Pages: Update reports $(date +%Y-%m-%d)"
+            git push origin gh-pages
+            echo "GitHub Pages updated successfully"
+          else
+            echo "No changes to commit"
+          fi
