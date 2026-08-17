@@ -1,0 +1,2890 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport XRAY — 2026-08-07</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;color:#172b4d;font-size:14px;}
+  header{background:#FF7900;padding:20px 32px;color:#fff;display:flex;align-items:center;justify-content:space-between;}
+  header h1{font-size:20px;font-weight:600;letter-spacing:.3px}
+  header .sub{font-size:13px;opacity:.85;margin-top:3px}
+  .logo{font-size:26px;font-weight:700;letter-spacing:1px;color:#fff}
+  .main{padding:24px 32px;max-width:1200px;margin:0 auto}
+  .kpi-strip{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+  .kpi-card{background:#fff;border-radius:8px;padding:14px 20px;border:1px solid #e1e4e8;flex:1;min-width:130px;text-align:center}
+  .kpi-card .val{font-size:28px;font-weight:700;line-height:1.1}
+  .kpi-card .lbl{font-size:11px;color:#6b778c;text-transform:uppercase;letter-spacing:.6px;margin-top:4px}
+  .pass-txt{color:#0a7a3e} .fail-txt{color:#c9372c}
+  .exec-txt{color:#974f00} .todo-txt{color:#0052cc} .aborted-txt{color:#6554c0}
+  .project-block{background:#fff;border-radius:8px;border:1px solid #e1e4e8;margin-bottom:20px;overflow:hidden}
+  .plan-block{border-top:3px solid #FF7900}
+  .project-header{padding:14px 20px;background:#f8f9fa;border-bottom:1px solid #e1e4e8;display:flex;align-items:center;justify-content:space-between}
+  .project-title{font-size:15px;font-weight:600;color:#172b4d}
+  .project-meta{font-size:12px;color:#6b778c;display:flex;align-items:center;gap:8px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{padding:9px 12px;text-align:left;background:#f8f9fa;border-bottom:2px solid #e1e4e8;color:#6b778c;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8f9fa}
+  .center{text-align:center}
+  .key-link{color:#0052cc;text-decoration:none;font-weight:500}
+  .key-link:hover{text-decoration:underline}
+  .summary{color:#42526e;max-width:280px}
+  .empty{text-align:center;color:#6b778c;padding:20px;font-style:italic}
+  .bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ebecf0;min-width:120px}
+  .seg{height:100%;transition:width .3s}
+  .seg.pass{background:#0a7a3e} .seg.fail{background:#c9372c}
+  .seg.exec{background:#f59f00} .seg.todo{background:#0052cc}
+  .seg.aborted{background:#6554c0} .seg.blocked{background:#97a0af}
+  .seg.other{background:#c1c7d0}
+  .badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;text-transform:uppercase}
+  .badge.pass,.badge.passed{background:#e3fcef;color:#0a7a3e}
+  .badge.fail,.badge.failed{background:#ffebe6;color:#c9372c}
+  .badge.executing{background:#fff7d6;color:#974f00}
+  .badge.todo{background:#e9f0fb;color:#0052cc}
+  .badge.aborted{background:#f0ebff;color:#6554c0}
+  .badge.blocked{background:#f4f5f7;color:#6b778c}
+  .rate-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700}
+  .rate-badge.pass{background:#e3fcef;color:#0a7a3e}
+  .rate-badge.warn{background:#fff7d6;color:#974f00}
+  .rate-badge.fail{background:#ffebe6;color:#c9372c}
+  .plan-summary{padding:16px 20px}
+  .plan-exec-key{font-size:13px;color:#6b778c;margin-bottom:12px}
+  .kpi-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px}
+  .kpi{display:flex;flex-direction:column;align-items:center;min-width:60px}
+  .kpi-val{font-size:24px;font-weight:700;line-height:1}
+  .kpi-lbl{font-size:10px;color:#6b778c;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+  .section-title{font-size:13px;font-weight:600;color:#6b778c;text-transform:uppercase;letter-spacing:.6px;margin:24px 0 10px}
+  footer{text-align:center;color:#97a0af;font-size:11px;padding:20px 0 32px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Orange</div>
+    <h1>Rapport XRAY — Systèmes d'information</h1>
+    <div class="sub">Environnement : XMQ1 &nbsp;·&nbsp; Date : 07/08/2026 &nbsp;·&nbsp; Généré le 13/08/2026 à 07:31</div>
+  </div>
+</header>
+<div class="main">
+  <div class="kpi-strip">
+    <div class="kpi-card"><div class="val">174</div><div class="lbl">Tests total</div></div>
+    <div class="kpi-card"><div class="val pass-txt">27</div><div class="lbl">Pass</div></div>
+    <div class="kpi-card"><div class="val fail-txt">51</div><div class="lbl">Fail</div></div>
+    <div class="kpi-card"><div class="val exec-txt">0</div><div class="lbl">En cours</div></div>
+    <div class="kpi-card"><div class="val todo-txt">0</div><div class="lbl">Todo</div></div>
+    <div class="kpi-card"><div class="val">16%</div><div class="lbl">Taux réussite</div></div>
+  </div>
+  <div class="section-title">Tickets Jira ouverts (XMQ1)</div>
+  <div class="project-block"><div class="table-wrap"><table><thead><tr><th>Ticket</th><th>Résumé</th><th>Statut</th><th>Priorité</th><th>Assigné à</th><th>Mis à jour</th></tr></thead><tbody>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-29457" target="_blank" class="key-link">OAGDESK-29457</a></td>
+              <td class="summary">[XMQ1] [DIGITAL] ACQUISITION BOL OCA/SOSH=&gt; OM non joignable error 504 Gateway Time-out</td>
+              <td>Waiting for customer</td>
+              <td>High</td>
+              <td>Exelcia Jira</td>
+              <td>2026-08-12 16:50:34.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3396" target="_blank" class="key-link">OAGDIGI-3396</a></td>
+              <td class="summary">[SOSH] [EC] [SHOP] [Robustesse Drupal] Problème d&#x27;affichage de l&#x27;icône d&#x27;information-option au niveau des</td>
+              <td>Test in Progress</td>
+              <td>Medium</td>
+              <td>Gregory Madassamy</td>
+              <td>2026-08-12 09:52:32.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-28164" target="_blank" class="key-link">OAGDESK-28164</a></td>
+              <td class="summary">[XMQ1] - Absence de menu sur BSCS Listener</td>
+              <td>In Progress</td>
+              <td>High</td>
+              <td>Exelcia Jira</td>
+              <td>2026-07-24 11:44:04.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-28865" target="_blank" class="key-link">OAGDESK-28865</a></td>
+              <td class="summary">[XMQ1][DIGITAL] ACQUISITION OCA error =&gt; technical Exception thrown when calling getCustomerOrderByDateAndIP </td>
+              <td>Waiting for customer</td>
+              <td>High</td>
+              <td>Exelcia Jira</td>
+              <td>2026-07-09 21:11:57.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-28652" target="_blank" class="key-link">OAGDESK-28652</a></td>
+              <td class="summary">[XMQ1] - ManageInvoice.findAndGet  - pas de invoiceImage </td>
+              <td>Waiting for customer</td>
+              <td>Medium</td>
+              <td>Exelcia Jira</td>
+              <td>2026-07-06 16:07:29.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-28058" target="_blank" class="key-link">OAGDESK-28058</a></td>
+              <td class="summary">[MQ1] Appels BL vers Enabler CRM KO =&gt; Connect to svc-unauth.gmq1.ms.fcm:80 [svc-unauth.gmq1.ms.fcm/10.49.16.252] fai</td>
+              <td>Waiting for customer</td>
+              <td>High</td>
+              <td>Exelcia Jira</td>
+              <td>2026-06-27 11:29:39.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-7450" target="_blank" class="key-link">OAGDESK-7450</a></td>
+              <td class="summary">[XMQ1] délocalisation de téléphone en échec</td>
+              <td>In Progress</td>
+              <td>Medium</td>
+              <td>Ncr Support</td>
+              <td>2026-06-22 11:21:18.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-27761" target="_blank" class="key-link">OAGDESK-27761</a></td>
+              <td class="summary">[MQ]ViP inaccessible</td>
+              <td>In Progress</td>
+              <td>High</td>
+              <td>Exelcia Jira</td>
+              <td>2026-06-22 11:16:55.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-14662" target="_blank" class="key-link">OAGDESK-14662</a></td>
+              <td class="summary">XMQ1 -  Erreur TEchnique lors du  chargement de la BL  des informations RECOUVREMENT</td>
+              <td>Waiting for customer</td>
+              <td>High</td>
+              <td>Ncr Support</td>
+              <td>2026-06-15 20:49:38.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-9225" target="_blank" class="key-link">OAGDESK-9225</a></td>
+              <td class="summary">Problème d&#x27;heure sur certaines machines nouveau socle</td>
+              <td>In Progress</td>
+              <td>Medium</td>
+              <td>Loic Bastaraud</td>
+              <td>2025-09-22 21:35:23.000+0200</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5979" target="_blank" class="key-link">OAGRCLI-5979</a></td>
+              <td class="summary">[API-DOCUMENT] Suppression de document impossible</td>
+              <td>Test in Progress</td>
+              <td>Medium</td>
+              <td>David Sebastien</td>
+              <td>2025-03-12 16:10:26.000+0100</td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDESK-10806" target="_blank" class="key-link">OAGDESK-10806</a></td>
+              <td class="summary">[XMQ1] Emeraude - Paiement facture - échec authentification 3DS : message à corriger</td>
+              <td>In Progress</td>
+              <td>High</td>
+              <td>Niels Josephau</td>
+              <td>2023-12-19 10:55:28.000+0100</td>
+            </tr></tbody></table></div></div>
+  <div class="section-title">Problèmes Dynatrace ouverts (XMQ1 · tag: XMQ1)</div>
+  <div class="project-block"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Titre</th><th>Sévérité</th><th>Impact</th><th>Statut</th><th>Début</th></tr></thead><tbody><tr><td colspan="6" class="empty">Erreur Dynatrace: DYNATRACE_BASE_URL non configuré.</td></tr></tbody></table></div></div>
+  <div class="section-title">Exécutions du jour par projet</div>
+  
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">OAGRCLI</span>
+            <span class="project-meta">1 campagne(s) · 72 tests · <span class="rate-badge fail">7%</span></span>
+          </div>
+          <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>TE Key</th><th>Résumé</th><th>Total</th>
+                <th class="pass-txt">PASS</th><th class="fail-txt">FAIL</th>
+                <th class="exec-txt">EXEC</th><th class="todo-txt">TODO</th>
+                <th class="aborted-txt">ABORT</th>
+                <th style="min-width:140px">Répartition</th><th>Taux</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-9512" target="_blank" class="key-link">OAGRCLI-9512</a></td>
+              <td class="summary">[OrekaBTQ] XMQ1 - Campagne de test PDC mobile - 2026-08-07</td>
+              <td class="center">72</td>
+              <td class="center pass-txt">5</td>
+              <td class="center fail-txt">11</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">56</td>
+              <td><div class="bar"><span class="seg pass" style="width:7%" title="PASS: 5"></span><span class="seg fail" style="width:15%" title="FAIL: 11"></span><span class="seg aborted" style="width:78%" title="ABORTED: 56"></span></div></td>
+              <td class="center"><span class="rate-badge fail">7%</span></td>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">OAGDIGI</span>
+            <span class="project-meta">6 campagne(s) · 102 tests · <span class="rate-badge fail">22%</span></span>
+          </div>
+          <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>TE Key</th><th>Résumé</th><th>Total</th>
+                <th class="pass-txt">PASS</th><th class="fail-txt">FAIL</th>
+                <th class="exec-txt">EXEC</th><th class="todo-txt">TODO</th>
+                <th class="aborted-txt">ABORT</th>
+                <th style="min-width:140px">Répartition</th><th>Taux</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-4565" target="_blank" class="key-link">OAGDIGI-4565</a></td>
+              <td class="summary">[BOL] XMQ1 - Campagne de test TARIF sosh - 2026-08-08</td>
+              <td class="center">15</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">15</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 15"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-4564" target="_blank" class="key-link">OAGDIGI-4564</a></td>
+              <td class="summary">[BOL] XMQ1 - Campagne de test TARIF oca - 2026-08-07</td>
+              <td class="center">12</td>
+              <td class="center pass-txt">6</td>
+              <td class="center fail-txt">6</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg pass" style="width:50%" title="PASS: 6"></span><span class="seg fail" style="width:50%" title="FAIL: 6"></span></div></td>
+              <td class="center"><span class="rate-badge warn">50%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-4563" target="_blank" class="key-link">OAGDIGI-4563</a></td>
+              <td class="summary">[BOL] XMQ1 - Campagne de test OFFRE sosh - 2026-08-07</td>
+              <td class="center">5</td>
+              <td class="center pass-txt">5</td>
+              <td class="center fail-txt">0</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg pass" style="width:100%" title="PASS: 5"></span></div></td>
+              <td class="center"><span class="rate-badge pass">100%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-4561" target="_blank" class="key-link">OAGDIGI-4561</a></td>
+              <td class="summary">[WEBCARE] XMQ1 - Campagne de test PDC tc - 2026-08-07</td>
+              <td class="center">6</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">5</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">1</td>
+              <td><div class="bar"><span class="seg fail" style="width:83%" title="FAIL: 5"></span><span class="seg aborted" style="width:17%" title="ABORTED: 1"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-4558" target="_blank" class="key-link">OAGDIGI-4558</a></td>
+              <td class="summary">[BOL] XMQ1 - Campagne de test PDC oca - 2026-08-07</td>
+              <td class="center">37</td>
+              <td class="center pass-txt">6</td>
+              <td class="center fail-txt">4</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">27</td>
+              <td><div class="bar"><span class="seg pass" style="width:16%" title="PASS: 6"></span><span class="seg fail" style="width:11%" title="FAIL: 4"></span><span class="seg aborted" style="width:73%" title="ABORTED: 27"></span></div></td>
+              <td class="center"><span class="rate-badge fail">16%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-4557" target="_blank" class="key-link">OAGDIGI-4557</a></td>
+              <td class="summary">[BOL] XMQ1 - Campagne de test PDC sosh - 2026-08-07</td>
+              <td class="center">27</td>
+              <td class="center pass-txt">5</td>
+              <td class="center fail-txt">10</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">12</td>
+              <td><div class="bar"><span class="seg pass" style="width:19%" title="PASS: 5"></span><span class="seg fail" style="width:37%" title="FAIL: 10"></span><span class="seg aborted" style="width:44%" title="ABORTED: 12"></span></div></td>
+              <td class="center"><span class="rate-badge fail">19%</span></td>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+  <div class='section-title'>Dernière exécution par Test Plan</div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-8398</span>
+            <span class="project-meta">[XMQ1] Plan de Test Oréka Boutique Mobile Standalone</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9554" target="_blank" class="key-link">OAGRCLI-9554</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">2</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">15</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">72</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">3%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:3%" title="PASS: 2"></span><span class="seg fail" style="width:21%" title="FAIL: 15"></span><span class="seg aborted" style="width:76%" title="ABORTED: 55"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7295" target="_blank" class="key-link">OAGRCLI-7295</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7367" target="_blank" class="key-link">OAGRCLI-7367</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7350" target="_blank" class="key-link">OAGRCLI-7350</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7371" target="_blank" class="key-link">OAGRCLI-7371</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7352" target="_blank" class="key-link">OAGRCLI-7352</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7372" target="_blank" class="key-link">OAGRCLI-7372</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7353" target="_blank" class="key-link">OAGRCLI-7353</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7373" target="_blank" class="key-link">OAGRCLI-7373</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7355" target="_blank" class="key-link">OAGRCLI-7355</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7374" target="_blank" class="key-link">OAGRCLI-7374</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7382" target="_blank" class="key-link">OAGRCLI-7382</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7356" target="_blank" class="key-link">OAGRCLI-7356</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7341" target="_blank" class="key-link">OAGRCLI-7341</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7383" target="_blank" class="key-link">OAGRCLI-7383</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7315" target="_blank" class="key-link">OAGRCLI-7315</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7290" target="_blank" class="key-link">OAGRCLI-7290</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7317" target="_blank" class="key-link">OAGRCLI-7317</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7291" target="_blank" class="key-link">OAGRCLI-7291</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7319" target="_blank" class="key-link">OAGRCLI-7319</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7349" target="_blank" class="key-link">OAGRCLI-7349</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7342" target="_blank" class="key-link">OAGRCLI-7342</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7314" target="_blank" class="key-link">OAGRCLI-7314</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7344" target="_blank" class="key-link">OAGRCLI-7344</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7321" target="_blank" class="key-link">OAGRCLI-7321</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7297" target="_blank" class="key-link">OAGRCLI-7297</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7446" target="_blank" class="key-link">OAGRCLI-7446</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7346" target="_blank" class="key-link">OAGRCLI-7346</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7447" target="_blank" class="key-link">OAGRCLI-7447</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7479" target="_blank" class="key-link">OAGRCLI-7479</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7411" target="_blank" class="key-link">OAGRCLI-7411</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7451" target="_blank" class="key-link">OAGRCLI-7451</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7480" target="_blank" class="key-link">OAGRCLI-7480</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7415" target="_blank" class="key-link">OAGRCLI-7415</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7481" target="_blank" class="key-link">OAGRCLI-7481</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7476" target="_blank" class="key-link">OAGRCLI-7476</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7466" target="_blank" class="key-link">OAGRCLI-7466</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7423" target="_blank" class="key-link">OAGRCLI-7423</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7482" target="_blank" class="key-link">OAGRCLI-7482</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7399" target="_blank" class="key-link">OAGRCLI-7399</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7467" target="_blank" class="key-link">OAGRCLI-7467</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7486" target="_blank" class="key-link">OAGRCLI-7486</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7483" target="_blank" class="key-link">OAGRCLI-7483</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7485" target="_blank" class="key-link">OAGRCLI-7485</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7389" target="_blank" class="key-link">OAGRCLI-7389</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7487" target="_blank" class="key-link">OAGRCLI-7487</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7390" target="_blank" class="key-link">OAGRCLI-7390</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7462" target="_blank" class="key-link">OAGRCLI-7462</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7421" target="_blank" class="key-link">OAGRCLI-7421</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7492" target="_blank" class="key-link">OAGRCLI-7492</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7488" target="_blank" class="key-link">OAGRCLI-7488</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-8223</span>
+            <span class="project-meta">[EB25] Plan de Test MOL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9557" target="_blank" class="key-link">OAGRCLI-9557</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">36</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">36</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 36"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8646" target="_blank" class="key-link">OAGRCLI-8646</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8647" target="_blank" class="key-link">OAGRCLI-8647</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8648" target="_blank" class="key-link">OAGRCLI-8648</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8651" target="_blank" class="key-link">OAGRCLI-8651</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8660" target="_blank" class="key-link">OAGRCLI-8660</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8652" target="_blank" class="key-link">OAGRCLI-8652</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8661" target="_blank" class="key-link">OAGRCLI-8661</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8645" target="_blank" class="key-link">OAGRCLI-8645</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8658" target="_blank" class="key-link">OAGRCLI-8658</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8659" target="_blank" class="key-link">OAGRCLI-8659</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8653" target="_blank" class="key-link">OAGRCLI-8653</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8697" target="_blank" class="key-link">OAGRCLI-8697</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8698" target="_blank" class="key-link">OAGRCLI-8698</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8695" target="_blank" class="key-link">OAGRCLI-8695</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8666" target="_blank" class="key-link">OAGRCLI-8666</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8699" target="_blank" class="key-link">OAGRCLI-8699</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8643" target="_blank" class="key-link">OAGRCLI-8643</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8667" target="_blank" class="key-link">OAGRCLI-8667</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8700" target="_blank" class="key-link">OAGRCLI-8700</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8644" target="_blank" class="key-link">OAGRCLI-8644</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8654" target="_blank" class="key-link">OAGRCLI-8654</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8701" target="_blank" class="key-link">OAGRCLI-8701</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8702" target="_blank" class="key-link">OAGRCLI-8702</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8655" target="_blank" class="key-link">OAGRCLI-8655</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8703" target="_blank" class="key-link">OAGRCLI-8703</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8656" target="_blank" class="key-link">OAGRCLI-8656</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8657" target="_blank" class="key-link">OAGRCLI-8657</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8704" target="_blank" class="key-link">OAGRCLI-8704</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8705" target="_blank" class="key-link">OAGRCLI-8705</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8696" target="_blank" class="key-link">OAGRCLI-8696</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8662" target="_blank" class="key-link">OAGRCLI-8662</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8663" target="_blank" class="key-link">OAGRCLI-8663</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8664" target="_blank" class="key-link">OAGRCLI-8664</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8665" target="_blank" class="key-link">OAGRCLI-8665</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8649" target="_blank" class="key-link">OAGRCLI-8649</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8650" target="_blank" class="key-link">OAGRCLI-8650</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-8222</span>
+            <span class="project-meta">[EB25] Plan de Test MOC</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9559" target="_blank" class="key-link">OAGRCLI-9559</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">1</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">3</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">4</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">25%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:25%" title="PASS: 1"></span><span class="seg fail" style="width:75%" title="FAIL: 3"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8685" target="_blank" class="key-link">OAGRCLI-8685</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8686" target="_blank" class="key-link">OAGRCLI-8686</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8687" target="_blank" class="key-link">OAGRCLI-8687</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8688" target="_blank" class="key-link">OAGRCLI-8688</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7915</span>
+            <span class="project-meta">[EB25] Plan de Test CRM365</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9548" target="_blank" class="key-link">OAGRCLI-9548</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">2</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">29</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">31</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">6%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:6%" title="PASS: 2"></span><span class="seg fail" style="width:94%" title="FAIL: 29"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8098" target="_blank" class="key-link">OAGRCLI-8098</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8099" target="_blank" class="key-link">OAGRCLI-8099</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8100" target="_blank" class="key-link">OAGRCLI-8100</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8102" target="_blank" class="key-link">OAGRCLI-8102</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8105" target="_blank" class="key-link">OAGRCLI-8105</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8106" target="_blank" class="key-link">OAGRCLI-8106</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8107" target="_blank" class="key-link">OAGRCLI-8107</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8109" target="_blank" class="key-link">OAGRCLI-8109</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8110" target="_blank" class="key-link">OAGRCLI-8110</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8111" target="_blank" class="key-link">OAGRCLI-8111</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8112" target="_blank" class="key-link">OAGRCLI-8112</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8123" target="_blank" class="key-link">OAGRCLI-8123</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8124" target="_blank" class="key-link">OAGRCLI-8124</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8125" target="_blank" class="key-link">OAGRCLI-8125</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8126" target="_blank" class="key-link">OAGRCLI-8126</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8127" target="_blank" class="key-link">OAGRCLI-8127</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8128" target="_blank" class="key-link">OAGRCLI-8128</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8129" target="_blank" class="key-link">OAGRCLI-8129</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8130" target="_blank" class="key-link">OAGRCLI-8130</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8131" target="_blank" class="key-link">OAGRCLI-8131</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8132" target="_blank" class="key-link">OAGRCLI-8132</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8133" target="_blank" class="key-link">OAGRCLI-8133</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8134" target="_blank" class="key-link">OAGRCLI-8134</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8135" target="_blank" class="key-link">OAGRCLI-8135</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8136" target="_blank" class="key-link">OAGRCLI-8136</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8137" target="_blank" class="key-link">OAGRCLI-8137</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8138" target="_blank" class="key-link">OAGRCLI-8138</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8139" target="_blank" class="key-link">OAGRCLI-8139</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8140" target="_blank" class="key-link">OAGRCLI-8140</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8141" target="_blank" class="key-link">OAGRCLI-8141</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8142" target="_blank" class="key-link">OAGRCLI-8142</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7914</span>
+            <span class="project-meta">[EB25] Plan de Test SGPN</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9553" target="_blank" class="key-link">OAGRCLI-9553</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">6</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">6</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 6"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7971" target="_blank" class="key-link">OAGRCLI-7971</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7981" target="_blank" class="key-link">OAGRCLI-7981</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7983" target="_blank" class="key-link">OAGRCLI-7983</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8039" target="_blank" class="key-link">OAGRCLI-8039</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8054" target="_blank" class="key-link">OAGRCLI-8054</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8055" target="_blank" class="key-link">OAGRCLI-8055</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7656</span>
+            <span class="project-meta">[EB25] Plan de Test Oréka Boutique Open ML</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9539" target="_blank" class="key-link">OAGRCLI-9539</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">1</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">24</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:4%" title="FAIL: 1"></span><span class="seg aborted" style="width:96%" title="ABORTED: 23"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7632" target="_blank" class="key-link">OAGRCLI-7632</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7638" target="_blank" class="key-link">OAGRCLI-7638</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7637" target="_blank" class="key-link">OAGRCLI-7637</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7642" target="_blank" class="key-link">OAGRCLI-7642</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7640" target="_blank" class="key-link">OAGRCLI-7640</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7633" target="_blank" class="key-link">OAGRCLI-7633</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7635" target="_blank" class="key-link">OAGRCLI-7635</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7636" target="_blank" class="key-link">OAGRCLI-7636</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7634" target="_blank" class="key-link">OAGRCLI-7634</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7641" target="_blank" class="key-link">OAGRCLI-7641</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7643" target="_blank" class="key-link">OAGRCLI-7643</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7639" target="_blank" class="key-link">OAGRCLI-7639</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7644" target="_blank" class="key-link">OAGRCLI-7644</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7646" target="_blank" class="key-link">OAGRCLI-7646</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7648" target="_blank" class="key-link">OAGRCLI-7648</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7649" target="_blank" class="key-link">OAGRCLI-7649</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7645" target="_blank" class="key-link">OAGRCLI-7645</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7650" target="_blank" class="key-link">OAGRCLI-7650</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7651" target="_blank" class="key-link">OAGRCLI-7651</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7652" target="_blank" class="key-link">OAGRCLI-7652</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7653" target="_blank" class="key-link">OAGRCLI-7653</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7647" target="_blank" class="key-link">OAGRCLI-7647</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7654" target="_blank" class="key-link">OAGRCLI-7654</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7655" target="_blank" class="key-link">OAGRCLI-7655</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7562</span>
+            <span class="project-meta">[EB25] Plan de Test Oréka Boutique Open</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9551" target="_blank" class="key-link">OAGRCLI-9551</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">13</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">30</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:43%" title="FAIL: 13"></span><span class="seg aborted" style="width:57%" title="ABORTED: 17"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7557" target="_blank" class="key-link">OAGRCLI-7557</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7534" target="_blank" class="key-link">OAGRCLI-7534</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7558" target="_blank" class="key-link">OAGRCLI-7558</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7540" target="_blank" class="key-link">OAGRCLI-7540</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7535" target="_blank" class="key-link">OAGRCLI-7535</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7538" target="_blank" class="key-link">OAGRCLI-7538</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7561" target="_blank" class="key-link">OAGRCLI-7561</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7532" target="_blank" class="key-link">OAGRCLI-7532</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7560" target="_blank" class="key-link">OAGRCLI-7560</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7559" target="_blank" class="key-link">OAGRCLI-7559</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7536" target="_blank" class="key-link">OAGRCLI-7536</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7545" target="_blank" class="key-link">OAGRCLI-7545</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7533" target="_blank" class="key-link">OAGRCLI-7533</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7542" target="_blank" class="key-link">OAGRCLI-7542</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7549" target="_blank" class="key-link">OAGRCLI-7549</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7537" target="_blank" class="key-link">OAGRCLI-7537</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7539" target="_blank" class="key-link">OAGRCLI-7539</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7541" target="_blank" class="key-link">OAGRCLI-7541</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7544" target="_blank" class="key-link">OAGRCLI-7544</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7543" target="_blank" class="key-link">OAGRCLI-7543</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7556" target="_blank" class="key-link">OAGRCLI-7556</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7555" target="_blank" class="key-link">OAGRCLI-7555</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7548" target="_blank" class="key-link">OAGRCLI-7548</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7547" target="_blank" class="key-link">OAGRCLI-7547</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7551" target="_blank" class="key-link">OAGRCLI-7551</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7546" target="_blank" class="key-link">OAGRCLI-7546</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7552" target="_blank" class="key-link">OAGRCLI-7552</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7553" target="_blank" class="key-link">OAGRCLI-7553</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7550" target="_blank" class="key-link">OAGRCLI-7550</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7554" target="_blank" class="key-link">OAGRCLI-7554</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7500</span>
+            <span class="project-meta">[EB25] Plan de Test Oréka Boutique Mobile Standalone</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9560" target="_blank" class="key-link">OAGRCLI-9560</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">6</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">13</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">35</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">17%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:17%" title="PASS: 6"></span><span class="seg fail" style="width:37%" title="FAIL: 13"></span><span class="seg aborted" style="width:46%" title="ABORTED: 16"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7596" target="_blank" class="key-link">OAGRCLI-7596</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7597" target="_blank" class="key-link">OAGRCLI-7597</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7585" target="_blank" class="key-link">OAGRCLI-7585</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7598" target="_blank" class="key-link">OAGRCLI-7598</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7604" target="_blank" class="key-link">OAGRCLI-7604</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7605" target="_blank" class="key-link">OAGRCLI-7605</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7599" target="_blank" class="key-link">OAGRCLI-7599</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7589" target="_blank" class="key-link">OAGRCLI-7589</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7606" target="_blank" class="key-link">OAGRCLI-7606</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7590" target="_blank" class="key-link">OAGRCLI-7590</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7591" target="_blank" class="key-link">OAGRCLI-7591</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7574" target="_blank" class="key-link">OAGRCLI-7574</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7573" target="_blank" class="key-link">OAGRCLI-7573</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7568" target="_blank" class="key-link">OAGRCLI-7568</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7593" target="_blank" class="key-link">OAGRCLI-7593</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7610" target="_blank" class="key-link">OAGRCLI-7610</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7594" target="_blank" class="key-link">OAGRCLI-7594</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7612" target="_blank" class="key-link">OAGRCLI-7612</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7601" target="_blank" class="key-link">OAGRCLI-7601</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7614" target="_blank" class="key-link">OAGRCLI-7614</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7617" target="_blank" class="key-link">OAGRCLI-7617</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7602" target="_blank" class="key-link">OAGRCLI-7602</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7615" target="_blank" class="key-link">OAGRCLI-7615</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7616" target="_blank" class="key-link">OAGRCLI-7616</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7570" target="_blank" class="key-link">OAGRCLI-7570</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7571" target="_blank" class="key-link">OAGRCLI-7571</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7608" target="_blank" class="key-link">OAGRCLI-7608</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7619" target="_blank" class="key-link">OAGRCLI-7619</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7620" target="_blank" class="key-link">OAGRCLI-7620</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7621" target="_blank" class="key-link">OAGRCLI-7621</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7583" target="_blank" class="key-link">OAGRCLI-7583</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7584" target="_blank" class="key-link">OAGRCLI-7584</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7586" target="_blank" class="key-link">OAGRCLI-7586</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7587" target="_blank" class="key-link">OAGRCLI-7587</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-7588" target="_blank" class="key-link">OAGRCLI-7588</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-5615</span>
+            <span class="project-meta">Matrice des thèmes CRM365</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-6772" target="_blank" class="key-link">OAGRCLI-6772</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">110</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">110</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg todo" style="width:100%" title="TODO: 110"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6656" target="_blank" class="key-link">OAGRCLI-6656</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6658" target="_blank" class="key-link">OAGRCLI-6658</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6659" target="_blank" class="key-link">OAGRCLI-6659</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6660" target="_blank" class="key-link">OAGRCLI-6660</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6661" target="_blank" class="key-link">OAGRCLI-6661</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6662" target="_blank" class="key-link">OAGRCLI-6662</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6663" target="_blank" class="key-link">OAGRCLI-6663</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6664" target="_blank" class="key-link">OAGRCLI-6664</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6665" target="_blank" class="key-link">OAGRCLI-6665</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6666" target="_blank" class="key-link">OAGRCLI-6666</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6667" target="_blank" class="key-link">OAGRCLI-6667</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6668" target="_blank" class="key-link">OAGRCLI-6668</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6669" target="_blank" class="key-link">OAGRCLI-6669</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6670" target="_blank" class="key-link">OAGRCLI-6670</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6671" target="_blank" class="key-link">OAGRCLI-6671</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6672" target="_blank" class="key-link">OAGRCLI-6672</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6673" target="_blank" class="key-link">OAGRCLI-6673</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6674" target="_blank" class="key-link">OAGRCLI-6674</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6675" target="_blank" class="key-link">OAGRCLI-6675</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6676" target="_blank" class="key-link">OAGRCLI-6676</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6677" target="_blank" class="key-link">OAGRCLI-6677</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6678" target="_blank" class="key-link">OAGRCLI-6678</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6679" target="_blank" class="key-link">OAGRCLI-6679</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6680" target="_blank" class="key-link">OAGRCLI-6680</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6681" target="_blank" class="key-link">OAGRCLI-6681</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6682" target="_blank" class="key-link">OAGRCLI-6682</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6683" target="_blank" class="key-link">OAGRCLI-6683</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6684" target="_blank" class="key-link">OAGRCLI-6684</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6685" target="_blank" class="key-link">OAGRCLI-6685</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6686" target="_blank" class="key-link">OAGRCLI-6686</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6687" target="_blank" class="key-link">OAGRCLI-6687</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6688" target="_blank" class="key-link">OAGRCLI-6688</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6689" target="_blank" class="key-link">OAGRCLI-6689</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6690" target="_blank" class="key-link">OAGRCLI-6690</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6691" target="_blank" class="key-link">OAGRCLI-6691</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6692" target="_blank" class="key-link">OAGRCLI-6692</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6693" target="_blank" class="key-link">OAGRCLI-6693</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6694" target="_blank" class="key-link">OAGRCLI-6694</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6695" target="_blank" class="key-link">OAGRCLI-6695</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6696" target="_blank" class="key-link">OAGRCLI-6696</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6697" target="_blank" class="key-link">OAGRCLI-6697</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6698" target="_blank" class="key-link">OAGRCLI-6698</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6699" target="_blank" class="key-link">OAGRCLI-6699</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6700" target="_blank" class="key-link">OAGRCLI-6700</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6701" target="_blank" class="key-link">OAGRCLI-6701</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6702" target="_blank" class="key-link">OAGRCLI-6702</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6703" target="_blank" class="key-link">OAGRCLI-6703</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6704" target="_blank" class="key-link">OAGRCLI-6704</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6705" target="_blank" class="key-link">OAGRCLI-6705</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-6706" target="_blank" class="key-link">OAGRCLI-6706</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-5168</span>
+            <span class="project-meta">Migration CRM365_ OCA</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-5511" target="_blank" class="key-link">OAGRCLI-5511</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">9</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">8</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">18</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge warn">50%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:50%" title="PASS: 9"></span><span class="seg fail" style="width:44%" title="FAIL: 8"></span><span class="seg aborted" style="width:6%" title="ABORTED: 1"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4892" target="_blank" class="key-link">OAGRCLI-4892</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4893" target="_blank" class="key-link">OAGRCLI-4893</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4894" target="_blank" class="key-link">OAGRCLI-4894</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4895" target="_blank" class="key-link">OAGRCLI-4895</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4896" target="_blank" class="key-link">OAGRCLI-4896</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4897" target="_blank" class="key-link">OAGRCLI-4897</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4898" target="_blank" class="key-link">OAGRCLI-4898</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4899" target="_blank" class="key-link">OAGRCLI-4899</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4900" target="_blank" class="key-link">OAGRCLI-4900</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4901" target="_blank" class="key-link">OAGRCLI-4901</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4902" target="_blank" class="key-link">OAGRCLI-4902</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4903" target="_blank" class="key-link">OAGRCLI-4903</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4904" target="_blank" class="key-link">OAGRCLI-4904</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5645" target="_blank" class="key-link">OAGRCLI-5645</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5646" target="_blank" class="key-link">OAGRCLI-5646</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5647" target="_blank" class="key-link">OAGRCLI-5647</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5667" target="_blank" class="key-link">OAGRCLI-5667</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5668" target="_blank" class="key-link">OAGRCLI-5668</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-4771</span>
+            <span class="project-meta">Migration DCRM</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-5572" target="_blank" class="key-link">OAGRCLI-5572</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">1</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">1</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg todo" style="width:100%" title="TODO: 1"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-5310" target="_blank" class="key-link">OAGRCLI-5310</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-4641</span>
+            <span class="project-meta">Facturation | Chantier 2ème adresse Test plan</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-4645" target="_blank" class="key-link">OAGRCLI-4645</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">2</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">3</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge warn">67%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:67%" title="PASS: 2"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4615" target="_blank" class="key-link">OAGRCLI-4615</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4619" target="_blank" class="key-link">OAGRCLI-4619</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge postponed">POSTPONED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-4617" target="_blank" class="key-link">OAGRCLI-4617</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3928</span>
+            <span class="project-meta">[EB25] Recette Technical Option Management</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-3934" target="_blank" class="key-link">OAGDIGI-3934</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">3</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">3</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">100%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:100%" title="PASS: 3"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGPFS-268" target="_blank" class="key-link">OAGPFS-268</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGPFS-269" target="_blank" class="key-link">OAGPFS-269</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGPFS-270" target="_blank" class="key-link">OAGPFS-270</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3635</span>
+            <span class="project-meta">[EB25] [API SPMT] Recette migration</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4047" target="_blank" class="key-link">OAGDIGI-4047</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">1</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">1</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">100%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:100%" title="PASS: 1"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3660" target="_blank" class="key-link">OAGDIGI-3660</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3505</span>
+            <span class="project-meta">[XMQ1] Plan de Test Webcare</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4611" target="_blank" class="key-link">OAGDIGI-4611</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">1</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">4</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:25%" title="FAIL: 1"></span><span class="seg aborted" style="width:75%" title="ABORTED: 3"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3269" target="_blank" class="key-link">OAGDIGI-3269</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3268" target="_blank" class="key-link">OAGDIGI-3268</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3267" target="_blank" class="key-link">OAGDIGI-3267</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3271" target="_blank" class="key-link">OAGDIGI-3271</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3416</span>
+            <span class="project-meta">[EB25] [SMS Web] Recette migration</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-3542" target="_blank" class="key-link">OAGDIGI-3542</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">19</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">22</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">86%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:86%" title="PASS: 19"></span><span class="seg blocked" style="width:14%" title="BLOCKED: 3"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3420" target="_blank" class="key-link">OAGDIGI-3420</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3452" target="_blank" class="key-link">OAGDIGI-3452</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3456" target="_blank" class="key-link">OAGDIGI-3456</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3457" target="_blank" class="key-link">OAGDIGI-3457</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge blocked">BLOCKED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3462" target="_blank" class="key-link">OAGDIGI-3462</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge blocked">BLOCKED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3463" target="_blank" class="key-link">OAGDIGI-3463</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge blocked">BLOCKED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3465" target="_blank" class="key-link">OAGDIGI-3465</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3467" target="_blank" class="key-link">OAGDIGI-3467</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3486" target="_blank" class="key-link">OAGDIGI-3486</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3487" target="_blank" class="key-link">OAGDIGI-3487</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3488" target="_blank" class="key-link">OAGDIGI-3488</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3489" target="_blank" class="key-link">OAGDIGI-3489</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3491" target="_blank" class="key-link">OAGDIGI-3491</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3492" target="_blank" class="key-link">OAGDIGI-3492</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3493" target="_blank" class="key-link">OAGDIGI-3493</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3504" target="_blank" class="key-link">OAGDIGI-3504</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3506" target="_blank" class="key-link">OAGDIGI-3506</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3507" target="_blank" class="key-link">OAGDIGI-3507</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3514" target="_blank" class="key-link">OAGDIGI-3514</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3518" target="_blank" class="key-link">OAGDIGI-3518</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3522" target="_blank" class="key-link">OAGDIGI-3522</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3523" target="_blank" class="key-link">OAGDIGI-3523</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3407</span>
+            <span class="project-meta">[XMQ1] Plan de Test BOL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4615" target="_blank" class="key-link">OAGDIGI-4615</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">2</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">15</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:13%" title="FAIL: 2"></span><span class="seg aborted" style="width:87%" title="ABORTED: 13"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3760" target="_blank" class="key-link">OAGDIGI-3760</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3758" target="_blank" class="key-link">OAGDIGI-3758</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3759" target="_blank" class="key-link">OAGDIGI-3759</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3761" target="_blank" class="key-link">OAGDIGI-3761</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3762" target="_blank" class="key-link">OAGDIGI-3762</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3745" target="_blank" class="key-link">OAGDIGI-3745</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3743" target="_blank" class="key-link">OAGDIGI-3743</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3744" target="_blank" class="key-link">OAGDIGI-3744</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3746" target="_blank" class="key-link">OAGDIGI-3746</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3747" target="_blank" class="key-link">OAGDIGI-3747</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3753" target="_blank" class="key-link">OAGDIGI-3753</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3754" target="_blank" class="key-link">OAGDIGI-3754</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3755" target="_blank" class="key-link">OAGDIGI-3755</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3756" target="_blank" class="key-link">OAGDIGI-3756</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3757" target="_blank" class="key-link">OAGDIGI-3757</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3309</span>
+            <span class="project-meta">[M2C] Recette API-SPMT – Migration Cloud</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-3310" target="_blank" class="key-link">OAGDIGI-3310</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">6</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">1</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">7</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">86%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:86%" title="PASS: 6"></span><span class="seg fail" style="width:14%" title="FAIL: 1"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3302" target="_blank" class="key-link">OAGDIGI-3302</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3303" target="_blank" class="key-link">OAGDIGI-3303</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3304" target="_blank" class="key-link">OAGDIGI-3304</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3305" target="_blank" class="key-link">OAGDIGI-3305</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3306" target="_blank" class="key-link">OAGDIGI-3306</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3307" target="_blank" class="key-link">OAGDIGI-3307</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3308" target="_blank" class="key-link">OAGDIGI-3308</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3935</span>
+            <span class="project-meta">[M2C] Recette Technical Option Management – Migration Cloud</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGPFS-272" target="_blank" class="key-link">OAGPFS-272</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">3</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">3</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">100%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:100%" title="PASS: 3"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGPFS-268" target="_blank" class="key-link">OAGPFS-268</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGPFS-269" target="_blank" class="key-link">OAGPFS-269</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGPFS-270" target="_blank" class="key-link">OAGPFS-270</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3223</span>
+            <span class="project-meta">[EB25] Plan de Test Webcare</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4617" target="_blank" class="key-link">OAGDIGI-4617</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">2</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">2</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 2"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3269" target="_blank" class="key-link">OAGDIGI-3269</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3270" target="_blank" class="key-link">OAGDIGI-3270</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3127</span>
+            <span class="project-meta">[EB25] Plan de Test BOL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4616" target="_blank" class="key-link">OAGDIGI-4616</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">20</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">22</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:91%" title="FAIL: 20"></span><span class="seg aborted" style="width:9%" title="ABORTED: 2"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3154" target="_blank" class="key-link">OAGDIGI-3154</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3155" target="_blank" class="key-link">OAGDIGI-3155</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3156" target="_blank" class="key-link">OAGDIGI-3156</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3162" target="_blank" class="key-link">OAGDIGI-3162</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3158" target="_blank" class="key-link">OAGDIGI-3158</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3159" target="_blank" class="key-link">OAGDIGI-3159</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3163" target="_blank" class="key-link">OAGDIGI-3163</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3164" target="_blank" class="key-link">OAGDIGI-3164</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3160" target="_blank" class="key-link">OAGDIGI-3160</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3174" target="_blank" class="key-link">OAGDIGI-3174</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3192" target="_blank" class="key-link">OAGDIGI-3192</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3193" target="_blank" class="key-link">OAGDIGI-3193</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3175" target="_blank" class="key-link">OAGDIGI-3175</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3176" target="_blank" class="key-link">OAGDIGI-3176</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3194" target="_blank" class="key-link">OAGDIGI-3194</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge aborted">ABORTED</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3166" target="_blank" class="key-link">OAGDIGI-3166</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3167" target="_blank" class="key-link">OAGDIGI-3167</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3168" target="_blank" class="key-link">OAGDIGI-3168</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3178" target="_blank" class="key-link">OAGDIGI-3178</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3179" target="_blank" class="key-link">OAGDIGI-3179</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3180" target="_blank" class="key-link">OAGDIGI-3180</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3181" target="_blank" class="key-link">OAGDIGI-3181</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3044</span>
+            <span class="project-meta">Refonte Applications IOS</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-3230" target="_blank" class="key-link">OAGDIGI-3230</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">1</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">1</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg todo" style="width:100%" title="TODO: 1"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3231" target="_blank" class="key-link">OAGDIGI-3231</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-2962</span>
+            <span class="project-meta">Refonte FEL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-2972" target="_blank" class="key-link">OAGDIGI-2972</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">10</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">2</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">12</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">83%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:83%" title="PASS: 10"></span><span class="seg fail" style="width:17%" title="FAIL: 2"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2824" target="_blank" class="key-link">OAGDIGI-2824</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2950" target="_blank" class="key-link">OAGDIGI-2950</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2963" target="_blank" class="key-link">OAGDIGI-2963</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2964" target="_blank" class="key-link">OAGDIGI-2964</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2965" target="_blank" class="key-link">OAGDIGI-2965</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2966" target="_blank" class="key-link">OAGDIGI-2966</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2967" target="_blank" class="key-link">OAGDIGI-2967</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2968" target="_blank" class="key-link">OAGDIGI-2968</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2969" target="_blank" class="key-link">OAGDIGI-2969</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2970" target="_blank" class="key-link">OAGDIGI-2970</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2971" target="_blank" class="key-link">OAGDIGI-2971</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2973" target="_blank" class="key-link">OAGDIGI-2973</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-2801</span>
+            <span class="project-meta">REFONTE EC </span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-3024" target="_blank" class="key-link">OAGDIGI-3024</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">1</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">2</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">3</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg fail" style="width:33%" title="FAIL: 1"></span><span class="seg todo" style="width:67%" title="TODO: 2"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3025" target="_blank" class="key-link">OAGDIGI-3025</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3093" target="_blank" class="key-link">OAGDIGI-3093</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3198" target="_blank" class="key-link">OAGDIGI-3198</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge todo">TODO</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-2286</span>
+            <span class="project-meta">[REFONTE APPS][OAG][APPS] Plan de test</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-2315" target="_blank" class="key-link">OAGDIGI-2315</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">8</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">4</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">12</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge warn">67%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="bar"><span class="seg pass" style="width:67%" title="PASS: 8"></span><span class="seg fail" style="width:33%" title="FAIL: 4"></span></div>
+          </div>
+          <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead><tr><th>Test Key</th><th>Résumé</th><th class="center">Statut</th></tr></thead>
+            <tbody>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2316" target="_blank" class="key-link">OAGDIGI-2316</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2348" target="_blank" class="key-link">OAGDIGI-2348</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2349" target="_blank" class="key-link">OAGDIGI-2349</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2350" target="_blank" class="key-link">OAGDIGI-2350</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2351" target="_blank" class="key-link">OAGDIGI-2351</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2352" target="_blank" class="key-link">OAGDIGI-2352</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2353" target="_blank" class="key-link">OAGDIGI-2353</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2354" target="_blank" class="key-link">OAGDIGI-2354</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2355" target="_blank" class="key-link">OAGDIGI-2355</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2356" target="_blank" class="key-link">OAGDIGI-2356</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2357" target="_blank" class="key-link">OAGDIGI-2357</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge pass">PASS</span></td>
+                </tr>
+                <tr>
+                  <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-2358" target="_blank" class="key-link">OAGDIGI-2358</a></td>
+                  <td class="summary">—</td>
+                  <td class="center"><span class="badge fail">FAIL</span></td>
+                </tr></tbody>
+          </table>
+          </div>
+        </div>
+</div>
+<footer>Rapport généré automatiquement · Orange SI · XRAY / Jira</footer>
+</body>
+</html>

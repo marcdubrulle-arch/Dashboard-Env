@@ -10,13 +10,14 @@ from xray_report.apis import (
     fetch_dynatrace_open_problems_by_env,
     fetch_last_execution_with_tests,
     fetch_open_jira_issues_by_env,
+    fetch_test_keys_from_jql,
     fetch_test_executions,
     fetch_test_plan,
     fetch_test_runs,
     get_session,
     resolve_dynatrace_tag,
 )
-from xray_report.config import DEFAULT_ENVIRONMENT, DEFAULT_PROJECTS, JIRA_BASE_URL, JIRA_TOKEN
+from xray_report.config import DEFAULT_ENVIRONMENT, DEFAULT_PROJECTS, DEFAULT_TESTS_FILTER_JQL, JIRA_BASE_URL, JIRA_TOKEN
 from xray_report.confluence_publish import publish_to_confluence, publish_to_confluence_child
 from xray_report.history import save_report_stats
 from xray_report.report_html import build_html
@@ -29,6 +30,11 @@ def main():
     parser.add_argument("--testplan", default=None, help="Clé du Test Plan (ex: OAGRCLI-123)")
     parser.add_argument("--output", default="rapport_xray.html", help="Fichier HTML de sortie")
     parser.add_argument("--env", default=None, help="Environnement XRAY (ex: XITG, XITD, XITR)")
+    parser.add_argument(
+        "--tests-filter-jql",
+        default=DEFAULT_TESTS_FILTER_JQL,
+        help="JQL de scope des tests suivis (ex: issue in testSetTests('OAGRCLI-123')). Laisser vide pour désactiver.",
+    )
     parser.add_argument("--confluence", action="store_true", default=False, help="Publier le rapport sur Confluence")
     parser.add_argument("--confluence-page-title", default=None, help="Titre de la page Confluence à créer/mettre à jour")
     parser.add_argument("--confluence-parent-id", default="468779106", help="ID de la page parent Confluence (défaut: 468779106)")
@@ -56,6 +62,16 @@ def main():
     environment = args.env.upper() if args.env else DEFAULT_ENVIRONMENT
     session = get_session()
     console.print(f"\n[bold]Rapport XRAY · {environment} · {target_date.isoformat()}[/bold]\n")
+
+    allowed_test_keys: set[str] | None = None
+    if args.tests_filter_jql.strip():
+        console.print("[dim]Récupération du scope de tests via filtre JQL …[/dim]")
+        try:
+            allowed_test_keys = fetch_test_keys_from_jql(args.tests_filter_jql)
+            console.print(f"[dim]  {len(allowed_test_keys)} test(s) dans le scope[/dim]")
+        except RuntimeError as e:
+            console.print(f"[yellow]Filtre tests ignoré (erreur JQL): {e}[/yellow]")
+            allowed_test_keys = None
 
     jira_open_issues = []
     jira_open_error = None
@@ -86,12 +102,14 @@ def main():
         for issue in issues:
             key = issue["key"]
             runs = fetch_test_runs(session, key)
+            if allowed_test_keys is not None:
+                runs = [run for run in runs if run.get("key") in allowed_test_keys]
             issue["_runs"] = runs
             if not runs:
-                console.print(f"  [dim]{key} → 0 test(s) — ignoré[/dim]")
+                console.print(f"  [dim]{key} -> 0 test(s) — ignore[/dim]")
                 continue
             executions_data.append(issue)
-            console.print(f"  [dim]{key} → {len(runs)} test(s)[/dim]")
+            console.print(f"  [dim]{key} -> {len(runs)} test(s)[/dim]")
         all_projects.append({"key": pkey, "executions": executions_data})
 
     all_plan_sections = []
@@ -110,6 +128,9 @@ def main():
                 plan_key = plan["key"]
                 plan_summary = plan.get("fields", {}).get("summary", "—")
                 last_exec = fetch_last_execution_with_tests(session, plan_key, console)
+                if last_exec and allowed_test_keys is not None:
+                    plan_runs = last_exec.get("_runs", [])
+                    last_exec["_runs"] = [run for run in plan_runs if run.get("key") in allowed_test_keys]
                 if last_exec and last_exec.get("_runs"):
                     all_plan_sections.append({"key": plan_key, "summary": plan_summary, "last_execution": last_exec})
 

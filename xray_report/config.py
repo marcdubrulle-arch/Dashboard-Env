@@ -29,6 +29,10 @@ JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "https://portail.agir.orange.com")
 JIRA_TOKEN = os.getenv("JIRA_TOKEN", "VOTRE_TOKEN_ICI")
 DEFAULT_ENVIRONMENT = os.getenv("XRAY_ENV", "XITG")
 DEFAULT_PROJECTS = ["OAGRCLI", "OAGDIGI"]
+DEFAULT_TESTS_FILTER_JQL = os.getenv(
+    "XRAY_TESTS_FILTER_JQL",
+    "issue in testSetTests('OAGDIGI-4083') OR issue in testSetTests('OAGENC-1854') OR issue in testSetTests('OAGENC-1855') OR issue in testSetTests('OAGLIVR-3683') OR issue in testSetTests('OAGRCLI-9154') OR issue in testSetTests('OAGRCLI-9155') OR issue in testSetTests('OAGRCLI-9156') OR issue in testSetTests('OAGRCLI-9161') OR issue in testSetTests('OAGITSS-2082') OR issue in testSetTests('OAGFAC-2157') OR issuekey in (OAGDIGI-3743, OAGDIGI-3744, OAGDIGI-3745, OAGDIGI-3746, OAGDIGI-3747, OAGDIGI-3777, OAGDIGI-3778, OAGDIGI-3779, OAGDIGI-3780, OAGDIGI-3781)",
+)
 
 CONFLUENCE_BASE_URL = os.getenv("CONFLUENCE_BASE_URL", "https://espace.agir.orange.com")
 CONFLUENCE_PAGE_ID = os.getenv("CONFLUENCE_PAGE_ID", "3168392364")

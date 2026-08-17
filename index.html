@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XRAY — Tableau de bord</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        background:#f4f5f7;color:#172b4d;font-size:14px}
+  header{background:#FF7900;padding:18px 32px;color:#fff;
+          display:flex;align-items:center;justify-content:space-between}
+  header h1{font-size:20px;font-weight:600}
+  header .sub{font-size:12px;opacity:.85;margin-top:4px}
+  .logo{font-size:26px;font-weight:700;letter-spacing:1px}
+  .main{padding:28px 32px;max-width:1200px;margin:0 auto}
+  .section-title{font-size:13px;font-weight:600;color:#6b778c;
+                  text-transform:uppercase;letter-spacing:.6px;margin:0 0 14px}
+  /* KPI strip */
+  .kpi-strip{display:flex;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+  .kpi-card{background:#fff;border-radius:8px;padding:16px 20px;
+             flex:1;min-width:200px;border:1px solid #e1e4e8;
+             box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .kpi-env{font-size:15px;font-weight:700;margin-bottom:10px}
+  .kpi-row-inner{display:flex;gap:16px;flex-wrap:wrap}
+  .kpi-item{display:flex;flex-direction:column;align-items:center;min-width:50px}
+  .kv{font-size:22px;font-weight:700;line-height:1}
+  .kl{font-size:10px;color:#6b778c;text-transform:uppercase;
+       letter-spacing:.5px;margin-top:3px}
+  /* Sélecteur de date */
+  .date-bar{display:flex;align-items:center;gap:12px;margin-bottom:16px;
+             background:#fff;border:1px solid #e1e4e8;border-radius:8px;
+             padding:12px 16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .date-bar label{font-size:13px;font-weight:600;color:#42526e;white-space:nowrap}
+  .date-bar select{font-size:13px;padding:6px 10px;border:1px solid #dfe1e6;
+                    border-radius:6px;background:#f8f9fa;color:#172b4d;cursor:pointer;
+                    min-width:140px}
+  .date-bar select:focus{outline:none;border-color:#FF7900;box-shadow:0 0 0 2px #FF790022}
+  .date-nav{display:flex;gap:4px}
+  .date-nav button{background:#fff;border:1px solid #dfe1e6;border-radius:6px;
+                    padding:5px 10px;cursor:pointer;font-size:14px;color:#42526e;
+                    transition:background .15s}
+  .date-nav button:hover{background:#f0f0f0}
+  .date-nav button:disabled{opacity:.35;cursor:not-allowed}
+  /* Camemberts */
+  .pies-row{display:flex;gap:20px;margin-bottom:32px;flex-wrap:wrap}
+  .pie-card{background:#fff;border-radius:10px;border:1px solid #e1e4e8;
+             padding:20px;flex:1;min-width:280px;max-width:420px;
+             box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .pie-card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .env-badge{color:#fff;font-weight:700;font-size:13px;
+              padding:3px 10px;border-radius:4px}
+  .pie-meta{display:flex;flex-direction:column;gap:2px;font-size:12px;color:#6b778c}
+  .total-badge{font-weight:600;color:#172b4d}
+  .pie-wrapper{position:relative;width:240px;height:240px;margin:0 auto 16px;cursor:pointer}
+  .pie-wrapper canvas{display:block}
+  .pie-center-label{position:absolute;top:50%;left:50%;
+                      transform:translate(-50%,-50%);text-align:center;
+                      pointer-events:none}
+  .rate-big{font-size:32px;font-weight:800;display:block}
+  .rate-big.pass{color:#0a7a3e} .rate-big.fail{color:#c9372c}
+  .rate-lbl{font-size:11px;color:#6b778c;text-transform:uppercase;letter-spacing:.5px}
+  .pie-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:14px;
+               justify-content:center;font-size:12px;color:#42526e}
+  .pie-legend-item{display:flex;align-items:center;gap:5px}
+  .pie-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .report-link{display:block;text-align:center;font-weight:600;font-size:13px;
+                text-decoration:none;padding:8px;border-radius:6px;
+                background:#f4f5f7;transition:background .15s}
+  .report-link:hover{background:#e8e9eb}
+  .no-data-pie{text-align:center;color:#6b778c;font-style:italic;
+                padding:30px 0;font-size:13px}
+  /* Courbe */
+  .chart-card{background:#fff;border-radius:10px;border:1px solid #e1e4e8;
+               padding:24px;margin-bottom:32px;
+               box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .chart-card canvas{max-height:320px}
+  /* Tableau historique */
+  .history-card{background:#fff;border-radius:10px;border:1px solid #e1e4e8;
+                 overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{padding:9px 14px;background:#f8f9fa;border-bottom:2px solid #e1e4e8;
+      font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#6b778c;text-align:left}
+  td{padding:9px 14px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8f9fa}
+  .center{text-align:center}
+  .pass-txt{color:#0a7a3e;font-weight:600}
+  .fail-txt{color:#c9372c;font-weight:600}
+  .exec-txt{color:#974f00;font-weight:600}
+  .env-badge-sm{color:#fff;font-weight:600;font-size:11px;padding:2px 7px;border-radius:3px}
+  .rate-badge-sm{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700}
+  .rate-badge-sm.pass{background:#e3fcef;color:#0a7a3e}
+  .rate-badge-sm.warn{background:#fff7d6;color:#974f00}
+  .rate-badge-sm.fail{background:#ffebe6;color:#c9372c}
+  .report-link-sm{font-weight:600;font-size:12px;text-decoration:none}
+  .report-link-sm:hover{text-decoration:underline}
+  .rate-warn{color:#974f00}
+  footer{text-align:center;color:#97a0af;font-size:11px;padding:20px 0 32px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Orange</div>
+    <h1>Tableau de bord XRAY — Qualité logicielle</h1>
+    <div class="sub">Généré le 17/08/2026 à 11:34 &nbsp;·&nbsp; Données : 60 entrée(s) historiques</div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- KPI dernier rapport -->
+  <div class="section-title">Résultats du dernier rapport</div>
+  <div class="kpi-strip">
+            <div class="kpi-card" style="border-left:4px solid #FF7900">
+              <div class="kpi-env" style="color:#FF7900">XITG</div>
+              <div class="kpi-row-inner">
+                <div class="kpi-item"><span class="kv pass-txt">11</span><span class="kl">PASS</span></div>
+                <div class="kpi-item"><span class="kv fail-txt">176</span><span class="kl">FAIL</span></div>
+                <div class="kpi-item"><span class="kv">241</span><span class="kl">TOTAL</span></div>
+                <div class="kpi-item"><span class="kv rate-fail">5%</span><span class="kl">TAUX</span></div>
+              </div>
+            </div>
+            <div class="kpi-card" style="border-left:4px solid #0052CC">
+              <div class="kpi-env" style="color:#0052CC">XMQ1</div>
+              <div class="kpi-row-inner">
+                <div class="kpi-item"><span class="kv pass-txt">11</span><span class="kl">PASS</span></div>
+                <div class="kpi-item"><span class="kv fail-txt">26</span><span class="kl">FAIL</span></div>
+                <div class="kpi-item"><span class="kv">37</span><span class="kl">TOTAL</span></div>
+                <div class="kpi-item"><span class="kv rate-pass">30%</span><span class="kl">TAUX</span></div>
+              </div>
+            </div></div>
+
+  <!-- Sélecteur de date + camemberts -->
+  <div class="section-title">Taux de réussite par environnement</div>
+  <div class="date-bar">
+    <label>📅 Date du rapport :</label>
+    <div class="date-nav">
+      <button id="btnPrev" title="Rapport précédent">◀</button>
+    </div>
+    <select id="dateSelect">
+      <option value="2026-08-13" selected>2026-08-13</option>
+<option value="2026-08-12">2026-08-12</option>
+<option value="2026-08-11">2026-08-11</option>
+<option value="2026-08-10">2026-08-10</option>
+<option value="2026-08-09">2026-08-09</option>
+<option value="2026-08-08">2026-08-08</option>
+<option value="2026-08-07">2026-08-07</option>
+<option value="2026-08-06">2026-08-06</option>
+<option value="2026-08-05">2026-08-05</option>
+<option value="2026-08-04">2026-08-04</option>
+<option value="2026-08-03">2026-08-03</option>
+<option value="2026-07-31">2026-07-31</option>
+<option value="2026-07-30">2026-07-30</option>
+<option value="2026-07-29">2026-07-29</option>
+<option value="2026-07-28">2026-07-28</option>
+<option value="2026-07-27">2026-07-27</option>
+<option value="2026-07-24">2026-07-24</option>
+<option value="2026-07-23">2026-07-23</option>
+<option value="2026-07-22">2026-07-22</option>
+<option value="2026-07-20">2026-07-20</option>
+<option value="2026-07-02">2026-07-02</option>
+<option value="2026-07-01">2026-07-01</option>
+<option value="2026-06-30">2026-06-30</option>
+<option value="2026-06-29">2026-06-29</option>
+<option value="2026-06-25">2026-06-25</option>
+<option value="2026-06-24">2026-06-24</option>
+<option value="2026-06-23">2026-06-23</option>
+<option value="2026-06-21">2026-06-21</option>
+<option value="2026-06-19">2026-06-19</option>
+<option value="2026-06-18">2026-06-18</option>
+
+    </select>
+    <div class="date-nav">
+      <button id="btnNext" title="Rapport suivant">▶</button>
+    </div>
+    <span id="dateLabel" style="font-size:12px;color:#6b778c;margin-left:4px"></span>
+  </div>
+  <div class="pies-row">
+        <div class="pie-card" id="piecard_XITG" style="border-top:4px solid #FF7900">
+          <div class="pie-card-header">
+            <div class="env-badge" style="background:#FF7900">XITG</div>
+            <div class="pie-meta">
+              <span id="pie_date_XITG">—</span>
+              <span class="total-badge" id="pie_total_XITG">— tests</span>
+            </div>
+          </div>
+          <div class="pie-wrapper">
+            <canvas id="pie_XITG" width="240" height="240"></canvas>
+            <div class="pie-center-label">
+              <span class="rate-big" id="pie_rate_XITG">—%</span>
+              <span class="rate-lbl">réussite</span>
+            </div>
+          </div>
+          <div class="pie-legend" id="legend_XITG"></div>
+          <a id="pie_link_XITG" href="#" class="report-link" style="color:#FF7900">
+            Voir le rapport détaillé →
+          </a>
+        </div>
+        <div class="pie-card" id="piecard_XMQ1" style="border-top:4px solid #0052CC">
+          <div class="pie-card-header">
+            <div class="env-badge" style="background:#0052CC">XMQ1</div>
+            <div class="pie-meta">
+              <span id="pie_date_XMQ1">—</span>
+              <span class="total-badge" id="pie_total_XMQ1">— tests</span>
+            </div>
+          </div>
+          <div class="pie-wrapper">
+            <canvas id="pie_XMQ1" width="240" height="240"></canvas>
+            <div class="pie-center-label">
+              <span class="rate-big" id="pie_rate_XMQ1">—%</span>
+              <span class="rate-lbl">réussite</span>
+            </div>
+          </div>
+          <div class="pie-legend" id="legend_XMQ1"></div>
+          <a id="pie_link_XMQ1" href="#" class="report-link" style="color:#0052CC">
+            Voir le rapport détaillé →
+          </a>
+        </div></div>
+
+  <!-- Courbe évolution -->
+  <div class="section-title">Évolution du taux de réussite</div>
+  <div class="chart-card">
+    <canvas id="lineChart"></canvas>
+  </div>
+
+  <!-- Historique tabulaire -->
+  <div class="section-title">Historique détaillé</div>
+  <div class="history-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Env.</th><th class="center">Total</th>
+          <th class="center pass-txt">PASS</th>
+          <th class="center fail-txt">FAIL</th>
+          <th class="center exec-txt">EN COURS</th>
+          <th class="center">Taux</th>
+          <th class="center">Rapport</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td>2026-08-13</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">37</td>
+          <td class="center pass-txt">11</td>
+          <td class="center fail-txt">26</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">30%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-13.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-13</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">241</td>
+          <td class="center pass-txt">11</td>
+          <td class="center fail-txt">176</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">5%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-13.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-12</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">161</td>
+          <td class="center pass-txt">13</td>
+          <td class="center fail-txt">67</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">8%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-12.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-12</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">297</td>
+          <td class="center pass-txt">57</td>
+          <td class="center fail-txt">195</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">19%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-12.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-11</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">297</td>
+          <td class="center pass-txt">33</td>
+          <td class="center fail-txt">103</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">11%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-11.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-11</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">305</td>
+          <td class="center pass-txt">27</td>
+          <td class="center fail-txt">173</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">9%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-11.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-10</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">153</td>
+          <td class="center pass-txt">26</td>
+          <td class="center fail-txt">56</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">17%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-10.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-10</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">486</td>
+          <td class="center pass-txt">57</td>
+          <td class="center fail-txt">359</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">12%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-10.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-09</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-09.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-09</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-09.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-08</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-08.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-08</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-08.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-07</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">174</td>
+          <td class="center pass-txt">27</td>
+          <td class="center fail-txt">51</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">16%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-07.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-07</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">449</td>
+          <td class="center pass-txt">42</td>
+          <td class="center fail-txt">367</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">9%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-07.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-06</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">158</td>
+          <td class="center pass-txt">1</td>
+          <td class="center fail-txt">36</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">1%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-06.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-06</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">333</td>
+          <td class="center pass-txt">73</td>
+          <td class="center fail-txt">246</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">22%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-06.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-05</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">63</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">37</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-05.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-05</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">204</td>
+          <td class="center pass-txt">5</td>
+          <td class="center fail-txt">71</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">2%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-05.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-04</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-04.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-04</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">71</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">71</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-04.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-03</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">35</td>
+          <td class="center pass-txt">12</td>
+          <td class="center fail-txt">9</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">34%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-08-03.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-08-03</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">155</td>
+          <td class="center pass-txt">28</td>
+          <td class="center fail-txt">86</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">18%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-08-03.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-31</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">162</td>
+          <td class="center pass-txt">35</td>
+          <td class="center fail-txt">48</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">22%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-31.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-31</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">225</td>
+          <td class="center pass-txt">27</td>
+          <td class="center fail-txt">184</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">12%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-31.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-30</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">156</td>
+          <td class="center pass-txt">30</td>
+          <td class="center fail-txt">85</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">19%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-30.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-30</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">456</td>
+          <td class="center pass-txt">71</td>
+          <td class="center fail-txt">343</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">16%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-30.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-29</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">135</td>
+          <td class="center pass-txt">10</td>
+          <td class="center fail-txt">125</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">7%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-29.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-29</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">450</td>
+          <td class="center pass-txt">73</td>
+          <td class="center fail-txt">377</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">16%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-29.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-28</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">331</td>
+          <td class="center pass-txt">25</td>
+          <td class="center fail-txt">306</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">8%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-28.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-28</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">613</td>
+          <td class="center pass-txt">60</td>
+          <td class="center fail-txt">553</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">10%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-28.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-27</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">218</td>
+          <td class="center pass-txt">1</td>
+          <td class="center fail-txt">217</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-27.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-27</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">574</td>
+          <td class="center pass-txt">72</td>
+          <td class="center fail-txt">502</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">13%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-27.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-24</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">141</td>
+          <td class="center pass-txt">6</td>
+          <td class="center fail-txt">135</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">4%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-24.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-24</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">619</td>
+          <td class="center pass-txt">102</td>
+          <td class="center fail-txt">517</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">16%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-24.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-23</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">156</td>
+          <td class="center pass-txt">18</td>
+          <td class="center fail-txt">138</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">12%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-23.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-23</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">451</td>
+          <td class="center pass-txt">105</td>
+          <td class="center fail-txt">346</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">23%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-23.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-22</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">142</td>
+          <td class="center pass-txt">14</td>
+          <td class="center fail-txt">128</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">10%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-22.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-22</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">409</td>
+          <td class="center pass-txt">84</td>
+          <td class="center fail-txt">325</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">21%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-22.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-20</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-20.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-20</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-20.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-02</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">121</td>
+          <td class="center pass-txt">13</td>
+          <td class="center fail-txt">108</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">11%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-02.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-02</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">299</td>
+          <td class="center pass-txt">17</td>
+          <td class="center fail-txt">282</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">6%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-02.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-01</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">72</td>
+          <td class="center pass-txt">10</td>
+          <td class="center fail-txt">62</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">14%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-07-01.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-07-01</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">461</td>
+          <td class="center pass-txt">9</td>
+          <td class="center fail-txt">452</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">2%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-07-01.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-30</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">72</td>
+          <td class="center pass-txt">5</td>
+          <td class="center fail-txt">67</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">7%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-30.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-30</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">206</td>
+          <td class="center pass-txt">24</td>
+          <td class="center fail-txt">182</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">12%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-30.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-29</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-29.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-29</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-29.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-25</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">127</td>
+          <td class="center pass-txt">16</td>
+          <td class="center fail-txt">111</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">13%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-25.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-25</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">272</td>
+          <td class="center pass-txt">5</td>
+          <td class="center fail-txt">267</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">2%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-25.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-24</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">163</td>
+          <td class="center pass-txt">22</td>
+          <td class="center fail-txt">141</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">13%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-24.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-24</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">275</td>
+          <td class="center pass-txt">14</td>
+          <td class="center fail-txt">261</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">5%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-24.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-23</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">150</td>
+          <td class="center pass-txt">20</td>
+          <td class="center fail-txt">130</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">13%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-23.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-23</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">313</td>
+          <td class="center pass-txt">16</td>
+          <td class="center fail-txt">297</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">5%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-23.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-21</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-21.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-21</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">0</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">0</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-21.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-19</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">118</td>
+          <td class="center pass-txt">8</td>
+          <td class="center fail-txt">110</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">7%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-19.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-19</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">257</td>
+          <td class="center pass-txt">12</td>
+          <td class="center fail-txt">245</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">5%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-19.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-18</td>
+          <td><span class="env-badge-sm" style="background:#0052CC">XMQ1</span></td>
+          <td class="center">182</td>
+          <td class="center pass-txt">0</td>
+          <td class="center fail-txt">182</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm fail">0%</span></td>
+          <td class="center"><a href="rapport_XMQ1_2026-06-18.html" class="report-link-sm" style="color:#0052CC">Rapport</a></td>
+        </tr>
+        <tr>
+          <td>2026-06-18</td>
+          <td><span class="env-badge-sm" style="background:#FF7900">XITG</span></td>
+          <td class="center">267</td>
+          <td class="center pass-txt">23</td>
+          <td class="center fail-txt">244</td>
+          <td class="center exec-txt">0</td>
+          <td class="center"><span class="rate-badge-sm pass">9%</span></td>
+          <td class="center"><a href="rapport_XITG_2026-06-18.html" class="report-link-sm" style="color:#FF7900">Rapport</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<footer>Tableau de bord généré automatiquement · Orange SI · XRAY / Jira</footer>
+
+<script>
+// ── Données embarquées ────────────────────────────────────────────────────────
+var ALL_HISTORY  = [{"date": "2026-06-18", "env": "XITG", "report": "rapport_XITG_2026-06-18.html", "total": 267, "pass": 23, "fail": 244, "executing": 0, "todo": 0, "aborted": 0, "rate": 9, "generated": "2026-06-18T12:25:00"}, {"date": "2026-06-18", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-18.html", "total": 182, "pass": 0, "fail": 182, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-06-18T12:28:00"}, {"date": "2026-06-19", "env": "XITG", "report": "rapport_XITG_2026-06-19.html", "total": 257, "pass": 12, "fail": 245, "executing": 0, "todo": 0, "aborted": 0, "rate": 5, "generated": "2026-06-19T14:17:00"}, {"date": "2026-06-19", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-19.html", "total": 118, "pass": 8, "fail": 110, "executing": 0, "todo": 0, "aborted": 0, "rate": 7, "generated": "2026-06-19T14:20:00"}, {"date": "2026-06-21", "env": "XITG", "report": "rapport_XITG_2026-06-21.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-06-22T09:49:52"}, {"date": "2026-06-21", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-21.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-06-22T09:53:14"}, {"date": "2026-06-23", "env": "XITG", "report": "rapport_XITG_2026-06-23.html", "total": 313, "pass": 16, "fail": 297, "executing": 0, "todo": 0, "aborted": 0, "rate": 5, "generated": "2026-06-23T09:24:48"}, {"date": "2026-06-23", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-23.html", "total": 150, "pass": 20, "fail": 130, "executing": 0, "todo": 0, "aborted": 0, "rate": 13, "generated": "2026-06-23T09:28:20"}, {"date": "2026-06-24", "env": "XITG", "report": "rapport_XITG_2026-06-24.html", "total": 275, "pass": 14, "fail": 261, "executing": 0, "todo": 0, "aborted": 0, "rate": 5, "generated": "2026-06-24T09:19:51"}, {"date": "2026-06-24", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-24.html", "total": 163, "pass": 22, "fail": 141, "executing": 0, "todo": 0, "aborted": 0, "rate": 13, "generated": "2026-06-24T09:23:19"}, {"date": "2026-06-25", "env": "XITG", "report": "rapport_XITG_2026-06-25.html", "total": 272, "pass": 5, "fail": 267, "executing": 0, "todo": 0, "aborted": 0, "rate": 2, "generated": "2026-06-25T09:02:55"}, {"date": "2026-06-25", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-25.html", "total": 127, "pass": 16, "fail": 111, "executing": 0, "todo": 0, "aborted": 0, "rate": 13, "generated": "2026-06-25T09:06:32"}, {"date": "2026-06-29", "env": "XITG", "report": "rapport_XITG_2026-06-29.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-06-29T08:35:45"}, {"date": "2026-06-29", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-29.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-06-29T08:39:08"}, {"date": "2026-06-30", "env": "XITG", "report": "rapport_XITG_2026-06-30.html", "total": 206, "pass": 24, "fail": 182, "executing": 0, "todo": 0, "aborted": 0, "rate": 12, "generated": "2026-06-30T08:58:08"}, {"date": "2026-06-30", "env": "XMQ1", "report": "rapport_XMQ1_2026-06-30.html", "total": 72, "pass": 5, "fail": 67, "executing": 0, "todo": 0, "aborted": 0, "rate": 7, "generated": "2026-06-30T09:01:33"}, {"date": "2026-07-01", "env": "XITG", "report": "rapport_XITG_2026-07-01.html", "total": 461, "pass": 9, "fail": 452, "executing": 0, "todo": 0, "aborted": 0, "rate": 2, "generated": "2026-07-01T09:53:23"}, {"date": "2026-07-01", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-01.html", "total": 72, "pass": 10, "fail": 62, "executing": 0, "todo": 0, "aborted": 0, "rate": 14, "generated": "2026-07-01T09:56:47"}, {"date": "2026-07-02", "env": "XITG", "report": "rapport_XITG_2026-07-02.html", "total": 299, "pass": 17, "fail": 282, "executing": 0, "todo": 0, "aborted": 0, "rate": 6, "generated": "2026-07-02T09:20:10"}, {"date": "2026-07-02", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-02.html", "total": 121, "pass": 13, "fail": 108, "executing": 0, "todo": 0, "aborted": 0, "rate": 11, "generated": "2026-07-02T09:26:31"}, {"date": "2026-07-20", "env": "XITG", "report": "rapport_XITG_2026-07-20.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-07-20T07:30:56"}, {"date": "2026-07-20", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-20.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-07-20T07:34:25"}, {"date": "2026-07-22", "env": "XITG", "report": "rapport_XITG_2026-07-22.html", "total": 409, "pass": 84, "fail": 325, "executing": 0, "todo": 0, "aborted": 0, "rate": 21, "generated": "2026-07-22T08:50:10"}, {"date": "2026-07-22", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-22.html", "total": 142, "pass": 14, "fail": 128, "executing": 0, "todo": 0, "aborted": 0, "rate": 10, "generated": "2026-07-22T08:53:48"}, {"date": "2026-07-23", "env": "XITG", "report": "rapport_XITG_2026-07-23.html", "total": 451, "pass": 105, "fail": 346, "executing": 0, "todo": 0, "aborted": 0, "rate": 23, "generated": "2026-07-23T10:50:06"}, {"date": "2026-07-23", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-23.html", "total": 156, "pass": 18, "fail": 138, "executing": 0, "todo": 0, "aborted": 0, "rate": 12, "generated": "2026-07-23T10:53:41"}, {"date": "2026-07-24", "env": "XITG", "report": "rapport_XITG_2026-07-24.html", "total": 619, "pass": 102, "fail": 517, "executing": 0, "todo": 0, "aborted": 0, "rate": 16, "generated": "2026-07-24T10:31:57"}, {"date": "2026-07-24", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-24.html", "total": 141, "pass": 6, "fail": 135, "executing": 0, "todo": 0, "aborted": 0, "rate": 4, "generated": "2026-07-24T10:35:12"}, {"date": "2026-07-27", "env": "XITG", "report": "rapport_XITG_2026-07-27.html", "total": 574, "pass": 72, "fail": 502, "executing": 0, "todo": 0, "aborted": 0, "rate": 13, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-27", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-27.html", "total": 218, "pass": 1, "fail": 217, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-28", "env": "XITG", "report": "rapport_XITG_2026-07-28.html", "total": 613, "pass": 60, "fail": 553, "executing": 0, "todo": 0, "aborted": 0, "rate": 10, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-28", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-28.html", "total": 331, "pass": 25, "fail": 306, "executing": 0, "todo": 0, "aborted": 0, "rate": 8, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-29", "env": "XITG", "report": "rapport_XITG_2026-07-29.html", "total": 450, "pass": 73, "fail": 377, "executing": 0, "todo": 0, "aborted": 0, "rate": 16, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-29", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-29.html", "total": 135, "pass": 10, "fail": 125, "executing": 0, "todo": 0, "aborted": 0, "rate": 7, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-30", "env": "XITG", "report": "rapport_XITG_2026-07-30.html", "total": 456, "pass": 71, "fail": 343, "executing": 0, "todo": 0, "aborted": 0, "rate": 16, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-30", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-30.html", "total": 156, "pass": 30, "fail": 85, "executing": 0, "todo": 0, "aborted": 0, "rate": 19, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-31", "env": "XITG", "report": "rapport_XITG_2026-07-31.html", "total": 225, "pass": 27, "fail": 184, "executing": 0, "todo": 0, "aborted": 0, "rate": 12, "generated": "2026-08-04T21:09:00"}, {"date": "2026-07-31", "env": "XMQ1", "report": "rapport_XMQ1_2026-07-31.html", "total": 162, "pass": 35, "fail": 48, "executing": 0, "todo": 0, "aborted": 0, "rate": 22, "generated": "2026-08-04T21:09:00"}, {"date": "2026-08-03", "env": "XITG", "report": "rapport_XITG_2026-08-03.html", "total": 155, "pass": 28, "fail": 86, "executing": 0, "todo": 0, "aborted": 0, "rate": 18, "generated": "2026-08-04T21:09:00"}, {"date": "2026-08-03", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-03.html", "total": 35, "pass": 12, "fail": 9, "executing": 0, "todo": 0, "aborted": 0, "rate": 34, "generated": "2026-08-04T21:09:00"}, {"date": "2026-08-04", "env": "XITG", "report": "rapport_XITG_2026-08-04.html", "total": 71, "pass": 0, "fail": 71, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-05T09:27:00"}, {"date": "2026-08-04", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-04.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-05T09:27:00"}, {"date": "2026-08-05", "env": "XITG", "report": "rapport_XITG_2026-08-05.html", "total": 204, "pass": 5, "fail": 71, "executing": 0, "todo": 0, "aborted": 128, "rate": 2, "generated": "2026-08-13T07:24:17"}, {"date": "2026-08-05", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-05.html", "total": 63, "pass": 0, "fail": 37, "executing": 0, "todo": 0, "aborted": 26, "rate": 0, "generated": "2026-08-13T07:25:44"}, {"date": "2026-08-06", "env": "XITG", "report": "rapport_XITG_2026-08-06.html", "total": 333, "pass": 73, "fail": 246, "executing": 0, "todo": 0, "aborted": 14, "rate": 22, "generated": "2026-08-13T07:27:30"}, {"date": "2026-08-06", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-06.html", "total": 158, "pass": 1, "fail": 36, "executing": 0, "todo": 0, "aborted": 121, "rate": 1, "generated": "2026-08-13T07:28:56"}, {"date": "2026-08-07", "env": "XITG", "report": "rapport_XITG_2026-08-07.html", "total": 449, "pass": 42, "fail": 367, "executing": 0, "todo": 0, "aborted": 40, "rate": 9, "generated": "2026-08-13T07:30:32"}, {"date": "2026-08-07", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-07.html", "total": 174, "pass": 27, "fail": 51, "executing": 0, "todo": 0, "aborted": 96, "rate": 16, "generated": "2026-08-13T07:31:54"}, {"date": "2026-08-08", "env": "XITG", "report": "rapport_XITG_2026-08-08.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-13T07:33:08"}, {"date": "2026-08-08", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-08.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-13T07:34:17"}, {"date": "2026-08-09", "env": "XITG", "report": "rapport_XITG_2026-08-09.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-13T07:35:32"}, {"date": "2026-08-09", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-09.html", "total": 0, "pass": 0, "fail": 0, "executing": 0, "todo": 0, "aborted": 0, "rate": 0, "generated": "2026-08-13T07:36:50"}, {"date": "2026-08-10", "env": "XITG", "report": "rapport_XITG_2026-08-10.html", "total": 486, "pass": 57, "fail": 359, "executing": 0, "todo": 6, "aborted": 64, "rate": 12, "generated": "2026-08-13T07:38:31"}, {"date": "2026-08-10", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-10.html", "total": 153, "pass": 26, "fail": 56, "executing": 0, "todo": 0, "aborted": 71, "rate": 17, "generated": "2026-08-13T07:40:01"}, {"date": "2026-08-11", "env": "XITG", "report": "rapport_XITG_2026-08-11.html", "total": 305, "pass": 27, "fail": 173, "executing": 0, "todo": 0, "aborted": 105, "rate": 9, "generated": "2026-08-13T07:41:34"}, {"date": "2026-08-11", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-11.html", "total": 297, "pass": 33, "fail": 103, "executing": 0, "todo": 0, "aborted": 161, "rate": 11, "generated": "2026-08-13T07:43:06"}, {"date": "2026-08-12", "env": "XITG", "report": "rapport_XITG_2026-08-12.html", "total": 297, "pass": 57, "fail": 195, "executing": 0, "todo": 0, "aborted": 45, "rate": 19, "generated": "2026-08-13T07:44:38"}, {"date": "2026-08-12", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-12.html", "total": 161, "pass": 13, "fail": 67, "executing": 0, "todo": 0, "aborted": 81, "rate": 8, "generated": "2026-08-13T07:45:57"}, {"date": "2026-08-13", "env": "XITG", "report": "rapport_XITG_2026-08-13.html", "total": 241, "pass": 11, "fail": 176, "executing": 0, "todo": 0, "aborted": 54, "rate": 5, "generated": "2026-08-17T11:33:17"}, {"date": "2026-08-13", "env": "XMQ1", "report": "rapport_XMQ1_2026-08-13.html", "total": 37, "pass": 11, "fail": 26, "executing": 0, "todo": 0, "aborted": 0, "rate": 30, "generated": "2026-08-17T11:34:46"}];
+var ALL_ENVS     = ["XITG", "XMQ1"];
+var ENV_COLORS   = {"XITG": {"main": "#FF7900", "light": "#FFD580", "bg": "#FFF5E6"}, "XMQ1": {"main": "#0052CC", "light": "#80ABFF", "bg": "#E6EEFF"}};
+var pieCharts    = {};  // {env: Chart}
+
+// ── Utilitaires ───────────────────────────────────────────────────────────────
+function getEntry(date, env) {
+  return ALL_HISTORY.find(function(e) { return e.date === date && e.env === env; }) || null;
+}
+
+function pieDataForEntry(entry) {
+  if (!entry || entry.total === 0) {
+    return { labels: ['Pas de données'], values: [1], colors: ['#e1e4e8'] };
+  }
+  var labels = [], values = [], colors = [];
+  var map = [
+    ['PASS',     entry.pass      || 0, '#0a7a3e'],
+    ['FAIL',     entry.fail      || 0, '#c9372c'],
+    ['EN COURS', entry.executing || 0, '#f59f00'],
+    ['TODO',     entry.todo      || 0, '#0052cc'],
+    ['ABORTED',  entry.aborted   || 0, '#6554c0'],
+  ];
+  map.forEach(function(row) {
+    if (row[1] > 0) { labels.push(row[0]); values.push(row[1]); colors.push(row[2]); }
+  });
+  if (labels.length === 0) return { labels: ['Aucun test'], values: [1], colors: ['#e1e4e8'] };
+  return { labels: labels, values: values, colors: colors };
+}
+
+// ── Initialisation des camemberts ─────────────────────────────────────────────
+ALL_ENVS.forEach(function(env) {
+  var canvas = document.getElementById('pie_' + env);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  pieCharts[env] = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2, borderColor: '#fff', hoverOffset: 8 }] },
+    options: {
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              var total = ctx.dataset.data.reduce(function(a,b){return a+b;},0);
+              var pct = total > 0 ? Math.round(ctx.parsed / total * 100) : 0;
+              return ' ' + ctx.label + ' : ' + ctx.parsed + ' (' + pct + '%)';
+            }
+          }
+        }
+      },
+      animation: { animateScale: true },
+    }
+  });
+  // Clic → ouvrir le rapport
+  canvas.style.cursor = 'pointer';
+  canvas.addEventListener('click', function(e) {
+    var pts = pieCharts[env].getElementsAtEventForMode(e, 'nearest', {intersect:true}, true);
+    var link = document.getElementById('pie_link_' + env);
+    if (pts.length && link && link.href && link.href !== '#') {
+      window.open(link.href, '_blank');
+    }
+  });
+});
+
+// ── Mise à jour des camemberts pour une date donnée ───────────────────────────
+function updatePies(date) {
+  ALL_ENVS.forEach(function(env) {
+    var entry  = getEntry(date, env);
+    var chart  = pieCharts[env];
+    var col    = ENV_COLORS[env] || { main: '#6554c0' };
+    var data   = pieDataForEntry(entry);
+
+    // Mettre à jour le chart
+    chart.data.labels                        = data.labels;
+    chart.data.datasets[0].data             = data.values;
+    chart.data.datasets[0].backgroundColor  = data.colors;
+    chart.update();
+
+    // Mettre à jour les métadonnées
+    var rate    = entry ? entry.rate  : 0;
+    var total   = entry ? entry.total : 0;
+    var rateEl  = document.getElementById('pie_rate_'  + env);
+    var totalEl = document.getElementById('pie_total_' + env);
+    var dateEl  = document.getElementById('pie_date_'  + env);
+    var linkEl  = document.getElementById('pie_link_'  + env);
+
+    if (rateEl) {
+      rateEl.textContent = (entry ? rate + '%' : '—');
+      rateEl.className   = 'rate-big ' + (rate > 5 ? 'pass' : 'fail');
+    }
+    if (totalEl) { totalEl.textContent = (entry ? total + ' tests' : '— tests'); }
+    if (dateEl)  { dateEl.textContent  = (entry ? 'Rapport du ' + date : 'Aucune donnée pour cette date'); }
+    if (linkEl)  {
+      linkEl.href  = entry ? entry.report : '#';
+      linkEl.style.opacity = entry ? '1' : '0.4';
+      linkEl.style.pointerEvents = entry ? '' : 'none';
+    }
+
+    // Légende personnalisée
+    var legendEl = document.getElementById('legend_' + env);
+    if (legendEl) {
+      var html = '';
+      data.labels.forEach(function(label, i) {
+        html += '<div class="pie-legend-item"><div class="pie-legend-dot" style="background:'+data.colors[i]+'"></div>' + label + ' (' + data.values[i] + ')</div>';
+      });
+      legendEl.innerHTML = html;
+    }
+  });
+}
+
+// ── Sélecteur de date ─────────────────────────────────────────────────────────
+var sel     = document.getElementById('dateSelect');
+var btnPrev = document.getElementById('btnPrev');
+var btnNext = document.getElementById('btnNext');
+
+function updateNavButtons() {
+  var i = sel.selectedIndex;
+  btnPrev.disabled = (i <= 0);
+  btnNext.disabled = (i >= sel.options.length - 1);
+}
+
+sel.addEventListener('change', function() {
+  updatePies(sel.value);
+  updateNavButtons();
+});
+btnPrev.addEventListener('click', function() {
+  if (sel.selectedIndex > 0) { sel.selectedIndex--; updatePies(sel.value); updateNavButtons(); }
+});
+btnNext.addEventListener('click', function() {
+  if (sel.selectedIndex < sel.options.length - 1) { sel.selectedIndex++; updatePies(sel.value); updateNavButtons(); }
+});
+
+// Initialiser avec la date sélectionnée
+if (sel.value) { updatePies(sel.value); }
+updateNavButtons();
+
+// ── Courbe d'évolution ────────────────────────────────────────────────────────
+(function() {
+  var dates  = ["2026-06-18", "2026-06-19", "2026-06-21", "2026-06-23", "2026-06-24", "2026-06-25", "2026-06-29", "2026-06-30", "2026-07-01", "2026-07-02", "2026-07-20", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-27", "2026-07-28", "2026-07-29", "2026-07-30", "2026-07-31", "2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06", "2026-08-07", "2026-08-08", "2026-08-09", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13"];
+  var series = [
+    {
+            label: 'XITG',
+            data: [9, 5, 0, 5, 5, 2, 0, 12, 2, 6, 0, 21, 23, 16, 13, 10, 16, 16, 12, 18, 0, 2, 22, 9, 0, 0, 12, 9, 19, 5],
+            borderColor: '#FF7900',
+            backgroundColor: '#FF790022',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            spanGaps: true,
+        },
+      {
+            label: 'XMQ1',
+            data: [0, 7, 0, 13, 13, 13, 0, 7, 14, 11, 0, 10, 12, 4, 0, 8, 7, 19, 22, 34, 0, 0, 1, 16, 0, 0, 17, 11, 8, 30],
+            borderColor: '#0052CC',
+            backgroundColor: '#0052CC22',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            spanGaps: true,
+        }
+  ];
+  if (dates.length === 0) return;
+  var ctx = document.getElementById('lineChart').getContext('2d');
+  var lineChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: dates, datasets: series },
+    options: {
+      responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          title: { display: true, text: 'Taux de réussite (%)', color: '#6b778c' },
+          ticks: { callback: function(v) { return v + '%'; } },
+          grid: { color: '#f0f0f0' },
+        },
+        x: { grid: { color: '#f0f0f0' }, ticks: { maxRotation: 45, minRotation: 30 } }
+      },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return ' ' + ctx.dataset.label + ' : ' + (ctx.parsed.y !== null ? ctx.parsed.y + '%' : '—');
+            }
+          }
+        }
+      }
+    }
+  });
+  // Clic sur un point de la courbe → changer la date sélectionnée
+  document.getElementById('lineChart').addEventListener('click', function(e) {
+    var pts = lineChart.getElementsAtEventForMode(e, 'nearest', {intersect: false}, true);
+    if (pts.length) {
+      var dateClicked = dates[pts[0].index];
+      if (dateClicked) {
+        for (var i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].value === dateClicked) {
+            sel.selectedIndex = i;
+            updatePies(dateClicked);
+            updateNavButtons();
+            break;
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport XRAY — 2026-06-17</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        background:#f4f5f7;color:#172b4d;font-size:14px;}
+  header{background:#FF7900;padding:20px 32px;color:#fff;display:flex;
+          align-items:center;justify-content:space-between;}
+  header h1{font-size:20px;font-weight:600;letter-spacing:.3px}
+  header .sub{font-size:13px;opacity:.85;margin-top:3px}
+  .logo{font-size:26px;font-weight:700;letter-spacing:1px;color:#fff}
+  .main{padding:24px 32px;max-width:1200px;margin:0 auto}
+  .kpi-strip{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+  .kpi-card{background:#fff;border-radius:8px;padding:14px 20px;
+             border:1px solid #e1e4e8;flex:1;min-width:130px;text-align:center}
+  .kpi-card .val{font-size:28px;font-weight:700;line-height:1.1}
+  .kpi-card .lbl{font-size:11px;color:#6b778c;text-transform:uppercase;
+                  letter-spacing:.6px;margin-top:4px}
+  .pass-txt{color:#0a7a3e} .fail-txt{color:#c9372c}
+  .exec-txt{color:#974f00} .todo-txt{color:#0052cc} .aborted-txt{color:#6554c0}
+  .project-block{background:#fff;border-radius:8px;border:1px solid #e1e4e8;
+                  margin-bottom:20px;overflow:hidden}
+  .plan-block{border-top:3px solid #FF7900}
+  .project-header{padding:14px 20px;background:#f8f9fa;border-bottom:1px solid #e1e4e8;
+                   display:flex;align-items:center;justify-content:space-between}
+  .project-title{font-size:15px;font-weight:600;color:#172b4d}
+  .project-meta{font-size:12px;color:#6b778c;display:flex;align-items:center;gap:8px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{padding:9px 12px;text-align:left;background:#f8f9fa;
+      border-bottom:2px solid #e1e4e8;color:#6b778c;
+      font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8f9fa}
+  .center{text-align:center}
+  .key-link{color:#0052cc;text-decoration:none;font-weight:500}
+  .key-link:hover{text-decoration:underline}
+  .summary{color:#42526e;max-width:280px}
+  .empty{text-align:center;color:#6b778c;padding:20px;font-style:italic}
+  .bar{display:flex;height:8px;border-radius:4px;overflow:hidden;
+        background:#ebecf0;min-width:120px}
+  .seg{height:100%;transition:width .3s}
+  .seg.pass{background:#0a7a3e} .seg.fail{background:#c9372c}
+  .seg.exec{background:#f59f00} .seg.todo{background:#0052cc}
+  .seg.aborted{background:#6554c0} .seg.blocked{background:#97a0af}
+  .seg.other{background:#c1c7d0}
+  .badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;
+          font-weight:600;text-transform:uppercase}
+  .badge.pass,.badge.passed{background:#e3fcef;color:#0a7a3e}
+  .badge.fail,.badge.failed{background:#ffebe6;color:#c9372c}
+  .badge.executing{background:#fff7d6;color:#974f00}
+  .badge.todo{background:#e9f0fb;color:#0052cc}
+  .badge.aborted{background:#f0ebff;color:#6554c0}
+  .badge.blocked{background:#f4f5f7;color:#6b778c}
+  .rate-badge{display:inline-block;padding:3px 10px;border-radius:12px;
+              font-size:12px;font-weight:700}
+  .rate-badge.pass{background:#e3fcef;color:#0a7a3e}
+  .rate-badge.warn{background:#fff7d6;color:#974f00}
+  .rate-badge.fail{background:#ffebe6;color:#c9372c}
+  .plan-summary{padding:16px 20px}
+  .plan-exec-key{font-size:13px;color:#6b778c;margin-bottom:12px}
+  .kpi-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px}
+  .kpi{display:flex;flex-direction:column;align-items:center;min-width:60px}
+  .kpi-val{font-size:24px;font-weight:700;line-height:1}
+  .kpi-lbl{font-size:10px;color:#6b778c;text-transform:uppercase;
+            letter-spacing:.5px;margin-top:4px}
+  .section-title{font-size:13px;font-weight:600;color:#6b778c;text-transform:uppercase;
+                  letter-spacing:.6px;margin:24px 0 10px}
+  footer{text-align:center;color:#97a0af;font-size:11px;padding:20px 0 32px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Orange</div>
+    <h1>Rapport XRAY — Systèmes d'information</h1>
+    <div class="sub">Environnement : XITG &nbsp;·&nbsp; Date : 17/06/2026 &nbsp;·&nbsp; Généré le 18/06/2026 à 12:25</div>
+  </div>
+</header>
+<div class="main">
+  <div class="kpi-strip">
+    <div class="kpi-card"><div class="val">267</div><div class="lbl">Tests total</div></div>
+    <div class="kpi-card"><div class="val pass-txt">23</div><div class="lbl">Pass</div></div>
+    <div class="kpi-card"><div class="val fail-txt">244</div><div class="lbl">Fail</div></div>
+    <div class="kpi-card"><div class="val exec-txt">0</div><div class="lbl">En cours</div></div>
+    <div class="kpi-card"><div class="val todo-txt">0</div><div class="lbl">Todo</div></div>
+    <div class="kpi-card"><div class="val">9%</div><div class="lbl">Taux réussite</div></div>
+  </div>
+
+  <div class="section-title">Exécutions du jour par projet</div>
+  
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">OAGRCLI</span>
+            <span class="project-meta">5 campagne(s) · 206 tests · <span class="rate-badge fail">7%</span></span>
+          </div>
+          <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>TE Key</th><th>Résumé</th><th>Total</th>
+                <th class="pass-txt">PASS</th><th class="fail-txt">FAIL</th>
+                <th class="exec-txt">EXEC</th><th class="todo-txt">TODO</th>
+                <th class="aborted-txt">ABORT</th>
+                <th style="min-width:140px">Répartition</th><th>Taux</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8255" target="_blank" class="key-link">OAGRCLI-8255</a></td>
+              <td class="summary">[CRM365] XITG - Campagne de test PDC mobile - 2026-06-17</td>
+              <td class="center">71</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">71</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 71"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8242" target="_blank" class="key-link">OAGRCLI-8242</a></td>
+              <td class="summary">[OrekaBTQ] XITG - Campagne de test PDC openml - 2026-06-17</td>
+              <td class="center">24</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">24</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 24"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8239" target="_blank" class="key-link">OAGRCLI-8239</a></td>
+              <td class="summary">[OrekaBTQ] XITG - Campagne de test PDC open - 2026-06-17</td>
+              <td class="center">27</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">27</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 27"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8236" target="_blank" class="key-link">OAGRCLI-8236</a></td>
+              <td class="summary">[OrekaBTQ] XITG - Campagne de test PDC mobile - 2026-06-17</td>
+              <td class="center">53</td>
+              <td class="center pass-txt">10</td>
+              <td class="center fail-txt">43</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg pass" style="width:19%" title="PASS: 10"></span><span class="seg fail" style="width:81%" title="FAIL: 43"></span></div></td>
+              <td class="center"><span class="rate-badge fail">19%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGRCLI-8235" target="_blank" class="key-link">OAGRCLI-8235</a></td>
+              <td class="summary">[OrekaBTQ] XITG - Campagne de test PDC quicksign - 2026-06-1</td>
+              <td class="center">31</td>
+              <td class="center pass-txt">4</td>
+              <td class="center fail-txt">27</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg pass" style="width:13%" title="PASS: 4"></span><span class="seg fail" style="width:87%" title="FAIL: 27"></span></div></td>
+              <td class="center"><span class="rate-badge fail">13%</span></td>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">OAGDIGI</span>
+            <span class="project-meta">3 campagne(s) · 61 tests · <span class="rate-badge fail">15%</span></span>
+          </div>
+          <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>TE Key</th><th>Résumé</th><th>Total</th>
+                <th class="pass-txt">PASS</th><th class="fail-txt">FAIL</th>
+                <th class="exec-txt">EXEC</th><th class="todo-txt">TODO</th>
+                <th class="aborted-txt">ABORT</th>
+                <th style="min-width:140px">Répartition</th><th>Taux</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3321" target="_blank" class="key-link">OAGDIGI-3321</a></td>
+              <td class="summary">[WEBCARE] XITG - Campagne de test PDC tc - 2026-06-17</td>
+              <td class="center">6</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">6</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 6"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3315" target="_blank" class="key-link">OAGDIGI-3315</a></td>
+              <td class="summary">[BOL] XITG - Campagne de test PDC oca - 2026-06-17</td>
+              <td class="center">26</td>
+              <td class="center pass-txt">9</td>
+              <td class="center fail-txt">17</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg pass" style="width:35%" title="PASS: 9"></span><span class="seg fail" style="width:65%" title="FAIL: 17"></span></div></td>
+              <td class="center"><span class="rate-badge fail">35%</span></td>
+            </tr>
+            <tr>
+              <td><a href="https://portail.agir.orange.com/browse/OAGDIGI-3313" target="_blank" class="key-link">OAGDIGI-3313</a></td>
+              <td class="summary">[BOL] XITG - Campagne de test PDC sosh - 2026-06-17</td>
+              <td class="center">29</td>
+              <td class="center pass-txt">0</td>
+              <td class="center fail-txt">29</td>
+              <td class="center exec-txt">0</td>
+              <td class="center todo-txt">0</td>
+              <td class="center aborted-txt">0</td>
+              <td><div class="bar"><span class="seg fail" style="width:100%" title="FAIL: 29"></span></div></td>
+              <td class="center"><span class="rate-badge fail">0%</span></td>
+            </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+  
+</div>
+<footer>Rapport généré automatiquement · Orange SI · XRAY / Jira</footer>
+</body>
+</html>

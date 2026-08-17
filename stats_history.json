@@ -752,5 +752,31 @@
     "aborted": 81,
     "rate": 8,
     "generated": "2026-08-13T07:45:57"
+  },
+  {
+    "date": "2026-08-13",
+    "env": "XITG",
+    "report": "rapport_XITG_2026-08-13.html",
+    "total": 241,
+    "pass": 11,
+    "fail": 176,
+    "executing": 0,
+    "todo": 0,
+    "aborted": 54,
+    "rate": 5,
+    "generated": "2026-08-17T11:33:17"
+  },
+  {
+    "date": "2026-08-13",
+    "env": "XMQ1",
+    "report": "rapport_XMQ1_2026-08-13.html",
+    "total": 37,
+    "pass": 11,
+    "fail": 26,
+    "executing": 0,
+    "todo": 0,
+    "aborted": 0,
+    "rate": 30,
+    "generated": "2026-08-17T11:34:46"
   }
 ]

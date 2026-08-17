@@ -138,7 +138,7 @@ def fetch_last_execution_with_tests(session, plan_key: str, console: Console) ->
         exec_key = exec_info.get("key")
         runs = fetch_test_runs(session, exec_key)
         if runs:
-            console.print(f"  [dim]{plan_key} → {exec_key} ({len(runs)} tests)[/dim]")
+            console.print(f"  [dim]{plan_key} -> {exec_key} ({len(runs)} tests)[/dim]")
             exec_info["_runs"] = runs
             exec_info["_plan_key"] = plan_key
             return exec_info
@@ -181,3 +181,35 @@ def fetch_dynatrace_open_problems_by_env(target_env: str) -> tuple[list, str]:
         headers=[f"Authorization: Api-Token {DYNATRACE_TOKEN}", "Accept: application/json"],
     )
     return data.get("problems", []), env_tag
+
+
+def fetch_test_keys_from_jql(jql: str) -> set[str]:
+    if not jql.strip():
+        return set()
+
+    start_at = 0
+    page_size = 100
+    keys: set[str] = set()
+
+    while True:
+        data = curl_get_jira(
+            f"{JIRA_BASE_URL}/rest/api/2/search",
+            params={
+                "jql": jql,
+                "maxResults": page_size,
+                "startAt": start_at,
+                "fields": "key",
+            },
+        )
+        issues = data.get("issues", [])
+        for issue in issues:
+            key = issue.get("key")
+            if key:
+                keys.add(key)
+
+        total = data.get("total", 0)
+        start_at += len(issues)
+        if not issues or start_at >= total:
+            break
+
+    return keys

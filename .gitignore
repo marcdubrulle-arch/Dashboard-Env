@@ -13,10 +13,6 @@ venv/
 # Logs
 *.log
 
-# Generated reports
-rapport_*.html
-accueil.html
-
 # OS / Editor
 .DS_Store
 Thumbs.db

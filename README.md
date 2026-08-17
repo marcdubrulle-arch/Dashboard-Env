@@ -44,6 +44,7 @@ Le script [xray_rapport_du_jour.py](C:/Users/WHDD0146/XRAY%20Rapport/xray_rappor
 1. Copier `.env.example` vers `.env`.
 2. Renseigner les variables :
    - `JIRA_TOKEN`
+   - `XRAY_TESTS_FILTER_JQL` (optionnel, scope des tests suivis via filtre JQL Xray)
    - `CONFLUENCE_TOKEN`
    - `DYNATRACE_BASE_URL`
    - `DYNATRACE_TOKEN`
@@ -62,6 +63,8 @@ Créer un environnement virtuel, puis installer les dépendances :
 
 - Générer un rapport :
   - `python xray_rapport_du_jour.py --env XITG --output rapport_XITG_YYYY-MM-DD.html`
+  - Surcharger le filtre JQL à la volée :
+    - `python xray_rapport_du_jour.py --env XITG --tests-filter-jql "issue in testSetTests('OAGRCLI-9154')"`
 - Générer la page d'accueil :
   - `python generate_accueil.py --output accueil.html`
 
@@ -107,5 +110,5 @@ Configurer les **Repository Secrets** sur GitHub :
 
 ## Notes
 
-- Les fichiers `rapport_*.html` et `accueil.html` sont générés automatiquement et ignorés par Git.
+- Les fichiers `rapport_*.html`, [accueil.html](C:/Users/WHDD0146/XRAY%20Rapport/accueil.html) et `index.html` sont publiés pour GitHub Pages.
 - Les logs (`*.log`) sont ignorés par Git.

@@ -1,6 +1,7 @@
 name: Daily XRAY Report
 
 on:
+  push:
   schedule:
     # 06:30 UTC ~= 08:30 Europe/Paris (ajuster selon besoin)
     - cron: '30 6 * * *'
