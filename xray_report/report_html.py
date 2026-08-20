@@ -30,18 +30,41 @@ def build_html(
     dynatrace_error: str | None = None,
     dynatrace_tag: str | None = None,
 ) -> str:
-    def stat_bar(stats):
+    def stat_bar(stats, rate=None):
         total = sum(stats.values())
+        if rate is None:
+            rate = success_rate(stats)
         if total == 0:
-            return '<div class="bar"><span class="seg todo" style="width:100%">N/A</span></div>'
-        segs = ""
-        colors = {"PASS": "pass", "FAIL": "fail", "EXECUTING": "exec", "TODO": "todo", "ABORTED": "aborted", "BLOCKED": "blocked", "OTHER": "other"}
-        for k, cls in colors.items():
+            return '<div class="donut-wrap"><div class="donut" style="background:#ebecf0"><div class="donut-hole"><span class="donut-rate">N/A</span></div></div></div>'
+        color_hex = {
+            "PASS": "#0a7a3e", "FAIL": "#c9372c", "EXECUTING": "#f59f00",
+            "TODO": "#0052cc", "ABORTED": "#6554c0", "BLOCKED": "#97a0af", "OTHER": "#c1c7d0",
+        }
+        labels = {
+            "PASS": "Pass", "FAIL": "Fail", "EXECUTING": "En cours",
+            "TODO": "Todo", "ABORTED": "Abandonné", "BLOCKED": "Bloqué", "OTHER": "Autre",
+        }
+        stops = []
+        legend = ""
+        cum = 0.0
+        for k, hex_color in color_hex.items():
             v = stats.get(k, 0)
-            if v:
-                pct = round(v / total * 100)
-                segs += f'<span class="seg {cls}" style="width:{pct}%" title="{k}: {v}"></span>'
-        return f'<div class="bar">{segs}</div>'
+            if not v:
+                continue
+            pct = v / total * 100
+            start, cum = cum, cum + pct
+            stops.append(f"{hex_color} {start:.2f}% {cum:.2f}%")
+            legend += (
+                f'<div class="legend-item"><span class="dot" style="background:{hex_color}"></span>'
+                f'{labels[k]}: <b>{v}</b></div>'
+            )
+        gradient = ", ".join(stops)
+        return f"""<div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient({gradient})">
+            <div class="donut-hole"><span class="donut-rate">{rate}%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend">{legend}</div>
+        </div>"""
 
     def rate_badge(rate):
         cls = "pass" if rate >= 80 else ("warn" if rate >= 50 else "fail")
@@ -108,7 +131,7 @@ def build_html(
               <div class="kpi"><span class="kpi-val">{ptotal}</span><span class="kpi-lbl">TOTAL TESTS</span></div>
               <div class="kpi">{rate_badge(prate)}<span class="kpi-lbl">TAUX</span></div>
             </div>
-            {stat_bar(pt)}
+            {stat_bar(pt, prate)}
           </div>
         </div>"""
 
@@ -138,7 +161,7 @@ def build_html(
               <div class="kpi"><span class="kpi-val">{total}</span><span class="kpi-lbl">TOTAL</span></div>
               <div class="kpi">{rate_badge(rate)}<span class="kpi-lbl">TAUX</span></div>
             </div>
-            {stat_bar(stats)}
+            {stat_bar(stats, rate)}
           </div>
         </div>"""
         else:
@@ -189,12 +212,14 @@ def build_html(
   .key-link:hover{{text-decoration:underline}}
   .summary{{color:#42526e;max-width:280px}}
   .empty{{text-align:center;color:#6b778c;padding:20px;font-style:italic}}
-  .bar{{display:flex;height:8px;border-radius:4px;overflow:hidden;background:#ebecf0;min-width:120px}}
-  .seg{{height:100%;transition:width .3s}}
-  .seg.pass{{background:#0a7a3e}} .seg.fail{{background:#c9372c}}
-  .seg.exec{{background:#f59f00}} .seg.todo{{background:#0052cc}}
-  .seg.aborted{{background:#6554c0}} .seg.blocked{{background:#97a0af}}
-  .seg.other{{background:#c1c7d0}}
+  .donut-wrap{{display:flex;align-items:center;gap:20px;flex-wrap:wrap}}
+  .donut{{position:relative;width:96px;height:96px;min-width:96px;border-radius:50%}}
+  .donut-hole{{position:absolute;inset:12px;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}}
+  .donut-rate{{font-size:18px;font-weight:700;color:#172b4d;line-height:1.1}}
+  .donut-rate-lbl{{font-size:9px;color:#6b778c;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}}
+  .legend{{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;color:#42526e}}
+  .legend-item{{display:flex;align-items:center;gap:6px;white-space:nowrap}}
+  .dot{{width:9px;height:9px;border-radius:50%;display:inline-block}}
   .badge{{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;text-transform:uppercase}}
   .badge.pass,.badge.passed{{background:#e3fcef;color:#0a7a3e}}
   .badge.fail,.badge.failed{{background:#ffebe6;color:#c9372c}}

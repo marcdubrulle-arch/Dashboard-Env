@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport XRAY — 2026-08-19</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f5f7;color:#172b4d;font-size:14px;}
+  header{background:#FF7900;padding:20px 32px;color:#fff;display:flex;align-items:center;justify-content:space-between;}
+  header h1{font-size:20px;font-weight:600;letter-spacing:.3px}
+  header .sub{font-size:13px;opacity:.85;margin-top:3px}
+  .logo{font-size:26px;font-weight:700;letter-spacing:1px;color:#fff}
+  .main{padding:24px 32px;max-width:1200px;margin:0 auto}
+  .kpi-strip{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+  .kpi-card{background:#fff;border-radius:8px;padding:14px 20px;border:1px solid #e1e4e8;flex:1;min-width:130px;text-align:center}
+  .kpi-card .val{font-size:28px;font-weight:700;line-height:1.1}
+  .kpi-card .lbl{font-size:11px;color:#6b778c;text-transform:uppercase;letter-spacing:.6px;margin-top:4px}
+  .pass-txt{color:#0a7a3e} .fail-txt{color:#c9372c}
+  .exec-txt{color:#974f00} .todo-txt{color:#0052cc} .aborted-txt{color:#6554c0}
+  .project-block{background:#fff;border-radius:8px;border:1px solid #e1e4e8;margin-bottom:20px;overflow:hidden}
+  .plan-block{border-top:3px solid #FF7900}
+  .project-header{padding:14px 20px;background:#f8f9fa;border-bottom:1px solid #e1e4e8;display:flex;align-items:center;justify-content:space-between}
+  .project-title{font-size:15px;font-weight:600;color:#172b4d}
+  .project-meta{font-size:12px;color:#6b778c;display:flex;align-items:center;gap:8px}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{padding:9px 12px;text-align:left;background:#f8f9fa;border-bottom:2px solid #e1e4e8;color:#6b778c;font-size:11px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#f8f9fa}
+  .center{text-align:center}
+  .key-link{color:#0052cc;text-decoration:none;font-weight:500}
+  .key-link:hover{text-decoration:underline}
+  .summary{color:#42526e;max-width:280px}
+  .empty{text-align:center;color:#6b778c;padding:20px;font-style:italic}
+  .donut-wrap{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .donut{position:relative;width:96px;height:96px;min-width:96px;border-radius:50%}
+  .donut-hole{position:absolute;inset:12px;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .donut-rate{font-size:18px;font-weight:700;color:#172b4d;line-height:1.1}
+  .donut-rate-lbl{font-size:9px;color:#6b778c;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;color:#42526e}
+  .legend-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;text-transform:uppercase}
+  .badge.pass,.badge.passed{background:#e3fcef;color:#0a7a3e}
+  .badge.fail,.badge.failed{background:#ffebe6;color:#c9372c}
+  .badge.executing{background:#fff7d6;color:#974f00}
+  .badge.todo{background:#e9f0fb;color:#0052cc}
+  .badge.aborted{background:#f0ebff;color:#6554c0}
+  .badge.blocked{background:#f4f5f7;color:#6b778c}
+  .rate-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700}
+  .rate-badge.pass{background:#e3fcef;color:#0a7a3e}
+  .rate-badge.warn{background:#fff7d6;color:#974f00}
+  .rate-badge.fail{background:#ffebe6;color:#c9372c}
+  .plan-summary{padding:16px 20px}
+  .plan-exec-key{font-size:13px;color:#6b778c;margin-bottom:12px}
+  .kpi-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:12px}
+  .kpi{display:flex;flex-direction:column;align-items:center;min-width:60px}
+  .kpi-val{font-size:24px;font-weight:700;line-height:1}
+  .kpi-lbl{font-size:10px;color:#6b778c;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+  .section-title{font-size:13px;font-weight:600;color:#6b778c;text-transform:uppercase;letter-spacing:.6px;margin:24px 0 10px}
+  footer{text-align:center;color:#97a0af;font-size:11px;padding:20px 0 32px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">Orange</div>
+    <h1>Rapport XRAY — Systèmes d'information</h1>
+    <div class="sub">Environnement : XITG &nbsp;·&nbsp; Date : 19/08/2026 &nbsp;·&nbsp; Généré le 20/08/2026 à 11:38</div>
+  </div>
+</header>
+<div class="main">
+  <div class="kpi-strip">
+    <div class="kpi-card"><div class="val">277</div><div class="lbl">Tests total</div></div>
+    <div class="kpi-card"><div class="val pass-txt">79</div><div class="lbl">Pass</div></div>
+    <div class="kpi-card"><div class="val fail-txt">198</div><div class="lbl">Fail</div></div>
+    <div class="kpi-card"><div class="val exec-txt">0</div><div class="lbl">En cours</div></div>
+    <div class="kpi-card"><div class="val todo-txt">0</div><div class="lbl">Todo</div></div>
+    <div class="kpi-card"><div class="val">29%</div><div class="lbl">Taux réussite</div></div>
+  </div>
+  <div class="section-title">Tickets Jira ouverts (XITG)</div>
+  <div class="project-block">
+    <div class="plan-summary">
+      <div class="kpi-row"><div class="kpi"><span class="kpi-val">100</span><span class="kpi-lbl">TICKETS OUVERTS</span></div></div>
+    </div>
+  </div>
+  <div class="section-title">Problèmes Dynatrace ouverts (XITG · tag: XITG)</div>
+  <div class="project-block"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Titre</th><th>Sévérité</th><th>Impact</th><th>Statut</th><th>Début</th></tr></thead><tbody><tr><td colspan="6" class="empty">Aucun problème Dynatrace ouvert trouvé</td></tr></tbody></table></div></div>
+  <div class="section-title">Exécutions du jour par projet</div>
+  
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">OAGRCLI</span>
+            <span class="project-meta">6 campagne(s) · 208 tests · <span class="rate-badge fail">19%</span></span>
+          </div>
+          <div class="plan-summary">
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val">6</span><span class="kpi-lbl">CAMPAGNES</span></div>
+              <div class="kpi"><span class="kpi-val pass-txt">39</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">169</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val aborted-txt">0</span><span class="kpi-lbl">ABORT</span></div>
+              <div class="kpi"><span class="kpi-val">208</span><span class="kpi-lbl">TOTAL TESTS</span></div>
+              <div class="kpi"><span class="rate-badge fail">19%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 18.75%, #c9372c 18.75% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">19%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>39</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>169</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">OAGDIGI</span>
+            <span class="project-meta">3 campagne(s) · 69 tests · <span class="rate-badge warn">58%</span></span>
+          </div>
+          <div class="plan-summary">
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val">3</span><span class="kpi-lbl">CAMPAGNES</span></div>
+              <div class="kpi"><span class="kpi-val pass-txt">40</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">29</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val aborted-txt">0</span><span class="kpi-lbl">ABORT</span></div>
+              <div class="kpi"><span class="kpi-val">69</span><span class="kpi-lbl">TOTAL TESTS</span></div>
+              <div class="kpi"><span class="rate-badge warn">58%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 57.97%, #c9372c 57.97% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">58%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>40</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>29</b></div></div>
+        </div>
+          </div>
+        </div>
+  <div class='section-title'>Dernière exécution par Test Plan</div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-8398</span>
+            <span class="project-meta">[XMQ1] Plan de Test Oréka Boutique Mobile Standalone</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9621" target="_blank" class="key-link">OAGRCLI-9621</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">9</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">43</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">72</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">12%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 12.50%, #c9372c 12.50% 72.22%, #6554c0 72.22% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">12%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>9</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>43</b></div><div class="legend-item"><span class="dot" style="background:#6554c0"></span>Abandonné: <b>20</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-8223</span>
+            <span class="project-meta">[EB25] Plan de Test MOL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9629" target="_blank" class="key-link">OAGRCLI-9629</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">9</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">2</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">11</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge pass">82%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 81.82%, #c9372c 81.82% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">82%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>9</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>2</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-8222</span>
+            <span class="project-meta">[EB25] Plan de Test MOC</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9630" target="_blank" class="key-link">OAGRCLI-9630</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">15</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">12</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">27</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge warn">56%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 55.56%, #c9372c 55.56% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">56%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>15</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>12</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7915</span>
+            <span class="project-meta">[EB25] Plan de Test CRM365</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9627" target="_blank" class="key-link">OAGRCLI-9627</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">5</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">68</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">73</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">7%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 6.85%, #c9372c 6.85% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">7%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>5</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>68</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7914</span>
+            <span class="project-meta">[EB25] Plan de Test SGPN</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9628" target="_blank" class="key-link">OAGRCLI-9628</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">2</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">16</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">18</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">11%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 11.11%, #c9372c 11.11% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">11%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>2</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>16</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7656</span>
+            <span class="project-meta">[EB25] Plan de Test Oréka Boutique Open ML</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9594" target="_blank" class="key-link">OAGRCLI-9594</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">0</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">19</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#6554c0 0.00% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">0%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#6554c0"></span>Abandonné: <b>19</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7562</span>
+            <span class="project-meta">[EB25] Plan de Test Oréka Boutique Open</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9632" target="_blank" class="key-link">OAGRCLI-9632</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">28</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">30</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#c9372c 0.00% 93.33%, #6554c0 93.33% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">0%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>28</b></div><div class="legend-item"><span class="dot" style="background:#6554c0"></span>Abandonné: <b>2</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGRCLI-7500</span>
+            <span class="project-meta">[EB25] Plan de Test Oréka Boutique Mobile Standalone</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGRCLI-9639" target="_blank" class="key-link">OAGRCLI-9639</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">12</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">16</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#c9372c 0.00% 75.00%, #6554c0 75.00% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">0%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>12</b></div><div class="legend-item"><span class="dot" style="background:#6554c0"></span>Abandonné: <b>4</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3505</span>
+            <span class="project-meta">[XMQ1] Plan de Test Webcare</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4637" target="_blank" class="key-link">OAGDIGI-4637</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">4</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">4</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#c9372c 0.00% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">0%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>4</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3407</span>
+            <span class="project-meta">[XMQ1] Plan de Test BOL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4666" target="_blank" class="key-link">OAGDIGI-4666</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">15</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">15</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#c9372c 0.00% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">0%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>15</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3223</span>
+            <span class="project-meta">[EB25] Plan de Test Webcare</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4667" target="_blank" class="key-link">OAGDIGI-4667</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">0</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">5</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">5</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">0%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#c9372c 0.00% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">0%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>5</b></div></div>
+        </div>
+          </div>
+        </div>
+        <div class="project-block plan-block">
+          <div class="project-header">
+            <span class="project-title">Test Plan — OAGDIGI-3127</span>
+            <span class="project-meta">[EB25] Plan de Test BOL</span>
+          </div>
+          <div class="plan-summary">
+            <div class="plan-exec-key">Dernière exécution : <a href="https://portail.agir.orange.com/browse/OAGDIGI-4669" target="_blank" class="key-link">OAGDIGI-4669</a></div>
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val pass-txt">9</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">12</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">0</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">0</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val">21</span><span class="kpi-lbl">TOTAL</span></div>
+              <div class="kpi"><span class="rate-badge fail">43%</span><span class="kpi-lbl">TAUX</span></div>
+            </div>
+            <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(#0a7a3e 0.00% 42.86%, #c9372c 42.86% 100.00%)">
+            <div class="donut-hole"><span class="donut-rate">43%</span><span class="donut-rate-lbl">Taux</span></div>
+          </div>
+          <div class="legend"><div class="legend-item"><span class="dot" style="background:#0a7a3e"></span>Pass: <b>9</b></div><div class="legend-item"><span class="dot" style="background:#c9372c"></span>Fail: <b>12</b></div></div>
+        </div>
+          </div>
+        </div>
+</div>
+<footer>Rapport généré automatiquement · Orange SI · XRAY / Jira</footer>
+</body>
+</html>
