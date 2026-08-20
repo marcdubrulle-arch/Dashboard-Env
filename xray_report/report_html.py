@@ -200,6 +200,7 @@ def build_html(
   .plan-block{{border-top:3px solid #FF7900}}
   .project-header{{padding:14px 20px;background:#f8f9fa;border-bottom:1px solid #e1e4e8;display:flex;align-items:center;justify-content:space-between}}
   .project-title{{font-size:15px;font-weight:600;color:#172b4d}}
+  .plan-block .project-title{{font-size:18px;font-weight:700}}
   .project-meta{{font-size:12px;color:#6b778c;display:flex;align-items:center;gap:8px}}
   .table-wrap{{overflow-x:auto}}
   table{{width:100%;border-collapse:collapse;font-size:13px}}
