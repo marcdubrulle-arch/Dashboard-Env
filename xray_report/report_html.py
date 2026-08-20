@@ -148,8 +148,8 @@ def build_html(
             all_plan_blocks_html += f"""
         <div class="project-block plan-block">
           <div class="project-header">
-            <span class="project-title">Test Plan — {pk}</span>
-            <span class="project-meta">{summ[:60]}</span>
+            <span class="project-title">{summ}</span>
+            <span class="project-meta">{pk}</span>
           </div>
           <div class="plan-summary">
             <div class="plan-exec-key">Dernière exécution : <a href="{jira_base_url}/browse/{ex.get('key','')}" target="_blank" class="key-link">{ex.get('key','—')}</a></div>
@@ -168,8 +168,8 @@ def build_html(
             all_plan_blocks_html += f"""
         <div class="project-block plan-block">
           <div class="project-header">
-            <span class="project-title">Test Plan — {pk}</span>
-            <span class="project-meta">{summ[:60]}</span>
+            <span class="project-title">{summ}</span>
+            <span class="project-meta">{pk}</span>
           </div>
           <p class="empty" style="padding:16px">Aucune exécution trouvée pour ce Test Plan.</p>
         </div>"""
