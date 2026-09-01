@@ -28,15 +28,25 @@ def save_report_stats(
     output_path: str,
     stats_file: str,
     console: Console,
+    all_plan_sections: list | None = None,
 ):
     history = load_history_file(stats_file)
 
     grand = {"PASS": 0, "FAIL": 0, "EXECUTING": 0, "TODO": 0, "ABORTED": 0}
-    for proj in all_projects:
-        for ex in proj.get("executions", []):
-            stats = compute_stats(ex.get("_runs", []))
+    if all_plan_sections is not None:
+        for section in all_plan_sections:
+            last_exec = section.get("last_execution")
+            if not last_exec:
+                continue
+            stats = compute_stats(last_exec.get("_runs", []))
             for k in grand:
                 grand[k] += stats.get(k, 0)
+    else:
+        for proj in all_projects:
+            for ex in proj.get("executions", []):
+                stats = compute_stats(ex.get("_runs", []))
+                for k in grand:
+                    grand[k] += stats.get(k, 0)
     total = sum(grand.values())
     rate = round(grand["PASS"] / total * 100) if total > 0 else 0
 

@@ -159,7 +159,15 @@ def main():
     console.print("[dim]Ouvrez-le dans votre navigateur ou partagez-le par email.[/dim]\n")
 
     stats_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "stats_history.json")
-    save_report_stats(all_projects, target_date, environment, args.output, os.path.abspath(stats_file), console)
+    save_report_stats(
+        all_projects,
+        target_date,
+        environment,
+        args.output,
+        os.path.abspath(stats_file),
+        console,
+        all_plan_sections=all_plan_sections,
+    )
 
     if args.confluence:
         if args.confluence_page_title:
