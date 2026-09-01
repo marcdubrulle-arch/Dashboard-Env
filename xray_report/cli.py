@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--testplan", default=None, help="Clé du Test Plan (ex: OAGRCLI-123)")
     parser.add_argument("--output", default="rapport_xray.html", help="Fichier HTML de sortie")
     parser.add_argument("--env", default=None, help="Environnement XRAY (ex: XITG, XITD, XITR)")
+    parser.add_argument("--plan-filter", default=None, help="Filtrer les Test Plans par label (ex: [XMQ1], [XITG]) - affiche uniquement les plans contenant ce label")
     parser.add_argument(
         "--tests-filter-jql",
         default=DEFAULT_TESTS_FILTER_JQL,
@@ -117,7 +118,7 @@ def main():
         console.print(f"\n[dim]Test Plan {args.testplan} …[/dim]")
         plan_info = fetch_test_plan(session, args.testplan)
         plan_fields = plan_info.get("fields", {})
-        last_exec = fetch_last_execution_with_tests(session, args.testplan, console)
+        last_exec = fetch_last_execution_with_tests(session, args.testplan, console, environment=environment)
         all_plan_sections.append({"key": args.testplan, "summary": plan_fields.get("summary", "—"), "last_execution": last_exec})
     else:
         for pkey in args.projects:
@@ -127,7 +128,12 @@ def main():
             for plan in plans:
                 plan_key = plan["key"]
                 plan_summary = plan.get("fields", {}).get("summary", "—")
-                last_exec = fetch_last_execution_with_tests(session, plan_key, console)
+
+                # Filtrer par label si --plan-filter est spécifié
+                if args.plan_filter and args.plan_filter not in plan_summary:
+                    continue
+
+                last_exec = fetch_last_execution_with_tests(session, plan_key, console, environment=environment)
                 if last_exec and allowed_test_keys is not None:
                     plan_runs = last_exec.get("_runs", [])
                     last_exec["_runs"] = [run for run in plan_runs if run.get("key") in allowed_test_keys]

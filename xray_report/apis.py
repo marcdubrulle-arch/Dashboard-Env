@@ -128,14 +128,50 @@ def fetch_test_runs(session, execution_key: str) -> list:
         return []
 
 
-def fetch_last_execution_with_tests(session, plan_key: str, console: Console) -> dict | None:
+def fetch_issue_environment(issue_key: str) -> str | None:
+    if not issue_key:
+        return None
+    try:
+        data = curl_get_jira(
+            f"{JIRA_BASE_URL}/rest/api/2/issue/{issue_key}",
+            params={"fields": "customfield_11301,environment"},
+        )
+    except Exception:
+        return None
+
+    fields = data.get("fields", {})
+    raw_value = fields.get("customfield_11301")
+    if raw_value is None:
+        raw_value = fields.get("environment")
+
+    if isinstance(raw_value, dict):
+        raw_value = raw_value.get("value") or raw_value.get("name")
+    elif isinstance(raw_value, list):
+        raw_value = ", ".join(str(v).strip() for v in raw_value if str(v).strip())
+
+    value = str(raw_value).strip().upper() if raw_value not in (None, "") else ""
+    return value or None
+
+
+def fetch_last_execution_with_tests(session, plan_key: str, console: Console, environment: str | None = None) -> dict | None:
     executions = fetch_test_plan_executions(session, plan_key)
     if not executions:
         return None
 
     executions_sorted = sorted(executions, key=lambda x: x.get("key", ""), reverse=True)
     for exec_info in executions_sorted:
-        exec_key = exec_info.get("key")
+        exec_key = exec_info.get("key") or exec_info.get("issue", {}).get("key")
+        if not exec_key:
+            continue
+
+        if environment:
+            exec_env = fetch_issue_environment(exec_key)
+            if exec_env != environment.upper():
+                console.print(
+                    f"  [dim]{plan_key} -> {exec_key} ignorée (environnement {exec_env or 'inconnu'} != {environment.upper()})[/dim]"
+                )
+                continue
+
         runs = fetch_test_runs(session, exec_key)
         if runs:
             console.print(f"  [dim]{plan_key} -> {exec_key} ({len(runs)} tests)[/dim]")
@@ -144,7 +180,7 @@ def fetch_last_execution_with_tests(session, plan_key: str, console: Console) ->
             return exec_info
         console.print(f"  [dim]{exec_key} ignorée (0 test)[/dim]")
 
-    console.print(f"  [yellow]{plan_key} : aucune exécution avec des tests trouvée.[/yellow]")
+    console.print(f"  [yellow]{plan_key} : aucune exécution avec des tests trouvée pour l'environnement {environment or 'toutes'}.[/yellow]")
     return None
 
 
