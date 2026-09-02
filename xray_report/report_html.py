@@ -100,21 +100,70 @@ def build_html(
 
     project_blocks = ""
     grand = {"PASS": 0, "FAIL": 0, "EXECUTING": 0, "TODO": 0, "ABORTED": 0, "total": 0}
-    for proj in all_projects:
-        pkey = proj["key"]
-        execs = proj["executions"]
-        pt = {"PASS": 0, "FAIL": 0, "EXECUTING": 0, "TODO": 0, "ABORTED": 0}
-        for ex in execs:
-            s = compute_stats(ex.get("_runs", []))
-            for k in pt:
-                pt[k] += s.get(k, 0)
-        ptotal = sum(pt.values())
-        prate = round(pt["PASS"] / ptotal * 100) if ptotal > 0 else 0
-        for k in pt:
-            grand[k] += pt[k]
-        grand["total"] += ptotal
 
-        project_blocks += f"""
+    project_summaries: dict[str, dict] = {}
+    if plan_sections:
+        for plan_section in plan_sections:
+            ex = plan_section.get("last_execution")
+            if not ex:
+                continue
+            pkey = (plan_section.get("key") or "").split("-")[0]
+            if not pkey:
+                continue
+            pt = project_summaries.setdefault(
+                pkey,
+                {"campaigns": 0, "stats": {"PASS": 0, "FAIL": 0, "EXECUTING": 0, "TODO": 0, "ABORTED": 0}},
+            )
+            pt["campaigns"] += 1
+            stats = compute_stats(ex.get("_runs", []))
+            for k in pt["stats"]:
+                pt["stats"][k] += stats.get(k, 0)
+
+        for pkey in sorted(project_summaries):
+            pt = project_summaries[pkey]["stats"]
+            campaigns = project_summaries[pkey]["campaigns"]
+            ptotal = sum(pt.values())
+            prate = round(pt["PASS"] / ptotal * 100) if ptotal > 0 else 0
+            for k in pt:
+                grand[k] += pt[k]
+            grand["total"] += ptotal
+
+            project_blocks += f"""
+        <div class="project-block">
+          <div class="project-header">
+            <span class="project-title">{pkey}</span>
+            <span class="project-meta">{campaigns} campagne(s) · {ptotal} tests · {rate_badge(prate)}</span>
+          </div>
+          <div class="plan-summary">
+            <div class="kpi-row">
+              <div class="kpi"><span class="kpi-val">{campaigns}</span><span class="kpi-lbl">CAMPAGNES</span></div>
+              <div class="kpi"><span class="kpi-val pass-txt">{pt.get('PASS',0)}</span><span class="kpi-lbl">PASS</span></div>
+              <div class="kpi"><span class="kpi-val fail-txt">{pt.get('FAIL',0)}</span><span class="kpi-lbl">FAIL</span></div>
+              <div class="kpi"><span class="kpi-val exec-txt">{pt.get('EXECUTING',0)}</span><span class="kpi-lbl">EN COURS</span></div>
+              <div class="kpi"><span class="kpi-val todo-txt">{pt.get('TODO',0)}</span><span class="kpi-lbl">TODO</span></div>
+              <div class="kpi"><span class="kpi-val aborted-txt">{pt.get('ABORTED',0)}</span><span class="kpi-lbl">ABORT</span></div>
+              <div class="kpi"><span class="kpi-val">{ptotal}</span><span class="kpi-lbl">TOTAL TESTS</span></div>
+              <div class="kpi">{rate_badge(prate)}<span class="kpi-lbl">TAUX</span></div>
+            </div>
+            {stat_bar(pt, prate)}
+          </div>
+        </div>"""
+    else:
+        for proj in all_projects:
+            pkey = proj["key"]
+            execs = proj["executions"]
+            pt = {"PASS": 0, "FAIL": 0, "EXECUTING": 0, "TODO": 0, "ABORTED": 0}
+            for ex in execs:
+                s = compute_stats(ex.get("_runs", []))
+                for k in pt:
+                    pt[k] += s.get(k, 0)
+            ptotal = sum(pt.values())
+            prate = round(pt["PASS"] / ptotal * 100) if ptotal > 0 else 0
+            for k in pt:
+                grand[k] += pt[k]
+            grand["total"] += ptotal
+
+            project_blocks += f"""
         <div class="project-block">
           <div class="project-header">
             <span class="project-title">{pkey}</span>
